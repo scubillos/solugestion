@@ -44,7 +44,7 @@ class BaseDeDatos extends AbstractMigration
 				`celular` varchar(100) NOT NULL,
 				`correo` varchar(100) NOT NULL,
 				PRIMARY KEY (`id`)
-			) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1
+			) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1
 		");
 	}
 }

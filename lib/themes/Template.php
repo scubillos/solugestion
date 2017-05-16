@@ -4,20 +4,24 @@ namespace Theme;
 
 class Template{
 	//Clase para generar el template del aplicativo
-	protected static $theme = "default";
+	public static $theme = "default";
 	
-	protected static function __construct(){
+	public function __construct(){
 		require(APP_PATH."config/config.php");
-		static::theme = $config["THEME"] != "" ? $config["THEME"] : static::theme;
+		if($config["THEME"]!=""){
+			static::$theme = $config["THEME"];
+		}else{
+			static::$theme = "default";
+		}
 	}
 	
-	protected static function navbar(){
-		$routeNavbar = URL_APP."public/themes/".static::theme."/navbar.php";
+	public static function navbar($navbar){
+		$routeNavbar = PUBLIC_PATH."themes/".static::$theme."/navbar.php";
 		require_once($routeNavbar);
 	}
 	
-	protected static function sidebar(){
-		$routeSidebar = URL_APP."public/themes/".static::theme."/sidebar.php";
+	public static function sidebar($sidebar){
+		$routeSidebar = PUBLIC_PATH."themes/".static::$theme."/sidebar.php";
 		require_once($routeSidebar);
 	}
 }

@@ -22,5 +22,14 @@ class Session{
 		session_start();
 		return $_SESSION[$nameVar];
 	}
+	
+	public function getVarsSession(){
+		@session_start();
+		$varsSession = [];
+		foreach($_SESSION as $key => $value){
+				$varsSession[$key] = $value;
+		}
+		return $varsSession;
+	}
 }
 ?>
