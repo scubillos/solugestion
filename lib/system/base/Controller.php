@@ -21,6 +21,7 @@ class Controller{
 	
 	public $session = "";
 	public $template = "";
+	protected $verifySession = true;
 	
 	public function __construct(){
 		$this->FrontEnd();
@@ -50,6 +51,11 @@ class Controller{
 	public function ClassSession(){
 		require(SYS_PATH."system/Session.php");
 		$this->session = new Session;
+		if($this->verifySession){
+			if(!$this->session->verifySession()){				
+				$this->redirect("Login/Index");
+			}
+		}
 	}
 	
 	//Se carga la clase de template

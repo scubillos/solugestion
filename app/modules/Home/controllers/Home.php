@@ -2,7 +2,7 @@
 use Base\Controller as Controller;
 
 class Home Extends Controller{
-	public $titlePage = "Login"; //Para el titulo de la pagina
+	public $titlePage = ".: Solugestion :."; //Para el titulo de la pagina
 	
 	public function __construct(){
 		parent::__construct();

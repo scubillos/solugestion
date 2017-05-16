@@ -4,20 +4,22 @@ use Base\Controller as Controller;
 
 class Login Extends Controller{
 	public $titlePage = "Login"; //Para el titulo de la pagina
+	protected $verifySession = false;
 	
 	public function __construct(){
 		parent::__construct();
 	}
 	
 	public function Index(){
+		$this->AddJs("modules/Login/assets/js/login.js");
 		$this->RenderView("Index");
 	}
 	
 	public function Auth(){
 		if($_POST){
-			$nombre = $_POST["usuario"];
+			$email = $_POST["usuario"];
 			$users = $this->LoadModel("Usuarios/Usuarios");
-			$users = $users->where([ "nombre" => $nombre ])->toArray();
+			$users = $users->where([ "correo" => $email ])->toArray();
 			if(count($users)==1){
 				$idbin = decbin($users[0]["id"]);
 				$nombreus = $users[0]["nombre"];
@@ -37,7 +39,17 @@ class Login Extends Controller{
 				$this->session->varSession_set("permissions",$permissions);
 				
 				$this->redirect("Home");
+			}else{
+				$this->redirect("Login/Index?invalid=1");
 			}
+		}
+	}
+	
+	
+	
+	public function Logout(){
+		if($this->session->destroySession()){
+			$this->RenderView("Index");
 		}
 	}
 }
