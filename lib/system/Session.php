@@ -4,12 +4,19 @@ namespace Base;
 class Session{
 	public function __construct(){}
 	
-	public function verifyLogin(){
+	public function verifySession(){
 		session_start();
-		if(!isset($_SESSION)){
+		if(!isset($_SESSION["idbin"])){
 			session_destroy();
-			parent::callAction("Login");
+			return false;
 		}
+		return true;
+	}
+	
+	public function destroySession(){
+		session_start();
+		
+		session_destroy();
 		return true;
 	}
 	
@@ -21,6 +28,15 @@ class Session{
 	public function varSession_get($nameVar){
 		session_start();
 		return $_SESSION[$nameVar];
+	}
+	
+	public function getVarsSession(){
+		@session_start();
+		$varsSession = [];
+		foreach($_SESSION as $key => $value){
+				$varsSession[$key] = $value;
+		}
+		return $varsSession;
 	}
 }
 ?>

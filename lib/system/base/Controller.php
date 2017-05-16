@@ -14,15 +14,19 @@
 	- MODULE_USED = Modulo que se esta utilizando
 ***/
 namespace Base;
+use Theme\Template as Template;
 
 class Controller{
 	public $titlePage = "";
 	
 	public $session = "";
+	public $template = "";
+	protected $verifySession = true;
 	
 	public function __construct(){
 		$this->FrontEnd();
 		$this->ClassSession();
+		$this->ClassTemplate();
 	}
 	
 	//Se cargan JS,CSS,HTML
@@ -47,6 +51,30 @@ class Controller{
 	public function ClassSession(){
 		require(SYS_PATH."system/Session.php");
 		$this->session = new Session;
+		if($this->verifySession){
+			if(!$this->session->verifySession()){				
+				$this->redirect("Login/Index");
+			}
+		}
+	}
+	
+	//Se carga la clase de template
+	public function ClassTemplate(){
+		$this->template = new Template;
+	}
+	
+	public function navbar($data = []){
+		if(count($data)==0){
+			$data = $this->session->getVarsSession(); 
+		}
+		$this->template->navbar($data);
+	}
+	
+	public function sidebar($data = []){
+		if(count($data)==0){
+			$data = $this->session->getVarsSession(); 
+		}
+		$this->template->sidebar($data);
 	}
 	
 	//Funcion para cargar un modelo

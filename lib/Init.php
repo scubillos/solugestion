@@ -4,6 +4,7 @@
 	**/
 	require SYS_PATH."AppCore.php";	
 	require SYS_PATH."Router.php";
+	require SYS_PATH."themes/Template.php";
 	require SYS_PATH."system/base/Controller.php";
 	require SYS_PATH."system/base/DB.php";
 	require SYS_PATH."system/base/Model.php";

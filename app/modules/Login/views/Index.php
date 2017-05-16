@@ -4,7 +4,7 @@
 	</div>
 	<section>
 		<div class="container">
-			<form action="<?= $this->UrlBase(); ?>Login/Auth" method="post" autocomplete="off">
+			<form action="<?= $this->UrlBase(); ?>Login/Auth" method="post" autocomplete="off" id="loginForm">
 				<div class="form-group">
 					<label for="usuario">Usuario: </label>
 					<input type="text" name="usuario" class="form-control" id="usuario" placeholder="Usuario" required autofocus>
