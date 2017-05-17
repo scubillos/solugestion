@@ -77,6 +77,10 @@ class Controller{
 		$this->template->sidebar($data);
 	}
 	
+	public function breadcrumb($data = []){
+		$this->template->breadcrumb($data);
+	}
+	
 	//Funcion para cargar un modelo
 	public function LoadModel($model = ""){
 		$model = $model != "" ? $model : CONTROLLER_CALLED;		// Si $model esta vacia significa que se esta llamando al modelo que se llama igual al controlador actual

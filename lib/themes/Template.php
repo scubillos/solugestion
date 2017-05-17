@@ -24,5 +24,10 @@ class Template{
 		$routeSidebar = PUBLIC_PATH."themes/".static::$theme."/sidebar.php";
 		require_once($routeSidebar);
 	}
+	
+	public static function breadcrumb($breadcrumb){
+		$routeBreadcrumb = PUBLIC_PATH."themes/".static::$theme."/breadcrumb.php";
+		require_once($routeBreadcrumb);
+	}
 }
 ?>
