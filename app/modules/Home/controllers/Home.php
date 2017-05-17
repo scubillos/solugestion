@@ -9,6 +9,7 @@ class Home Extends Controller{
 	}
 	
 	public function Index(){
+		$this->LoadPluginJS("jqgrid");
 		$this->RenderView("Home/Index");
 	}
 	

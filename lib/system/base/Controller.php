@@ -244,6 +244,44 @@ class Controller{
 	public function redirect($url){
 		header("location: ".URL_APP.$url);
 	}
+	
+	//Funcion para cargar plugin JS
+	public function LoadPluginJS($plugin){
+		require(APP_PATH."config/pluginsJS.php");
+		$headHTML = "";
+		if(isset($pluginsJS[$plugin])){
+			//Se cargan los JS necesarios del plugin
+			if(isset($pluginsJS[$plugin]["JS"])){
+				foreach($pluginsJS[$plugin]["JS"] as $key){
+					$routeJS = $key;
+					$headHTML .= '<script type="text/javascript" src="'.URL_APP.$routeJS.'" ></script>';
+				}
+			}
+			//Se cargan los CSS necesarios del plugin
+			if(isset($pluginsJS[$plugin]["CSS"])){
+				foreach($pluginsJS[$plugin]["CSS"] as $key){
+					$routeCSS = $key;
+					$headHTML .= '<link rel="stylesheet" type="text/css" href="'.URL_APP.$routeCSS.'" />';
+				}
+			}
+		}else{
+			throw new \Exception("Plugin JS unknown");
+		}
+		echo $headHTML;
+	}
+	
+	//Funcion para cargar template de plugins
+	public function LoadTemplate($plugin,$id,$templateName = ""){
+		require(APP_PATH."config/pluginsJS.php");
+		
+		$nameTempl = $templateName != "" ? $templateName : "default";
+		if(isset($pluginsJS[$plugin]["Template"][$nameTempl])){
+			$routeTemplate = $pluginsJS[$plugin]["Template"][$nameTempl];
+			require(APP_PATH.$routeTemplate);
+		}else{
+			throw new \Exception("Plugin template unknown");
+		}
+	}
 }
 
 ?>
