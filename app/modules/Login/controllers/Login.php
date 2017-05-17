@@ -28,11 +28,11 @@ class Login Extends Controller{
 				$this->session->varSession_set("url_app",URL_APP);
 				
 				$permissions = [
-					array("nombre" => "Diagnostico SG", "url" => "Diagnostico/listar", "icono" => "glyphicon glyphicon-signal"),
-					array("nombre" => "Plan", "url" => "Plan/listar", "icono" => "glyphicon glyphicon-search"),
-					array("nombre" => "Administrador", "url" => "#", "icono" => "glyphicon glyphicon-eye-open", "submenus" => [
-						array("nombre" => "Tipos de usuario", "url" => "TiposUsuario/listar", "icono" => "glyphicon glyphicon-list"),
-						array("nombre" => "Usuarios", "url" => "Usuarios/listar", "icono" => "glyphicon glyphicon-user"),
+					array("id" => 1, "nombre" => "Diagnostico SG", "url" => "Diagnostico", "icono" => "glyphicon glyphicon-signal"),
+					array("id" => 2, "nombre" => "Plan", "url" => "Plan", "icono" => "glyphicon glyphicon-search"),
+					array("id" => 3, "nombre" => "Administrador", "url" => "#", "icono" => "glyphicon glyphicon-eye-open", "submenus" => [
+						array("id" => 4, "nombre" => "Tipos de usuario", "url" => "TiposUsuario", "icono" => "glyphicon glyphicon-list"),
+						array("id" => 5, "nombre" => "Usuarios", "url" => "Usuarios", "icono" => "glyphicon glyphicon-user"),
 					])
 				];
 				
