@@ -3,7 +3,7 @@
 use Base\Controller as Controller;
 
 class Login Extends Controller{
-	public $titlePage = "Login"; //Para el titulo de la pagina
+	public $titlePage = "Login Solugestion"; //Para el titulo de la pagina
 	protected $verifySession = false;
 	
 	public function __construct(){
@@ -48,6 +48,7 @@ class Login Extends Controller{
 	
 	
 	public function Logout(){
+		$this->AddJs("modules/Login/assets/js/login.js");
 		if($this->session->destroySession()){
 			$this->RenderView("Index");
 		}
