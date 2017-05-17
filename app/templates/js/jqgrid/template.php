@@ -1,5 +1,5 @@
 <!-- Template de jqGrid -->
-<div>
-    <table id="<?php echo $id ?>"></table>
+<div class="row">
+    <table id="<?php echo $id ?>" width="100%"></table>
     <div id="<?php echo $id ?>Pager"></div>
 </div>
