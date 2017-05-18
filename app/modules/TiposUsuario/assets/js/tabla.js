@@ -1,22 +1,74 @@
 $(document).ready(function () {
 	
-	var idTable = "#TablaTiposUsuario";
-	var pagerTable = "#TablaTiposUsuarioPager";
+	var elem = {
+		idTable: "#TablaTiposUsuario",
+		pagerTable: "#TablaTiposUsuarioPager",
+		botonOpciones: ".viewOptions",
+		modalOpciones: "#ModalOpciones",
+		botonEliminar: "#btnEliminar",
+	};
 	
 	
-	$(idTable).jqGrid({
-		url: '',
-		mtype: "GET",
+	$(elem.idTable).jqGrid({
+		url: baseUrl() + 'TiposUsuario/listar',
+		mtype: "post",
 		styleUI : 'Bootstrap',
 		datatype: "json",
+		colNames: ["Nombre","Estado","",""],
 		colModel: [
-			{ label: 'Nombre', name: 'nombre_tipo', key: true, width: 75 },
-			{ label: 'Estado', name: 'estado', width: 150 }
+			{ name: 'nombre_tipo', width: 75 },
+			{ name: 'estado', width: 150 },
+			{ name: '', width: 50 },
+			{ name: 'link', width: 150, hidden:true }
 		],
-		viewrecords: true,
-		height: 250,
-		width: $(idTable).parent().width()-100,
-		rowNum: 20,
-		pager: pagerTable
+		height: "auto",
+		//autowidth: true,
+		width: $(elem.idTable).parent().width()/2,
+		rowList: [10, 20,50, 100],
+		rowNum: 10,
+		page: 1,
+		pager: elem.pagerTable,
+		loadtext: '<p>Cargando...',
+		beforeRequest: function(data, status, xhr){},
+		align:"center",
+		viewrecords: true
+	});
+	
+	$(elem.idTable).on("click",elem.botonOpciones,function(e){
+		e.preventDefault();
+		e.returnValue=false;
+		e.stopPropagation();
+		
+		var id = $(this).data("id");
+		var rowINFO = $(elem.idTable).getRowData(id);
+		var options = rowINFO["link"];
+		
+		$(elem.modalOpciones).find('.modal-title').empty().html('Tipo de usuario: <b>'+ rowINFO["nombre_tipo"] +'</b>');
+		$(elem.modalOpciones).find('.modal-body').empty().html(options);
+		$(elem.modalOpciones).find('.modal-footer').empty();
+		$(elem.modalOpciones).modal('show');		
+	});
+	
+	$(elem.modalOpciones).on("click",elem.botonEliminar,function(e){
+		e.preventDefault();
+		e.returnValue=false;
+		e.stopPropagation();
+		
+		var id = $(this).data("id");
+		
+		$.ajax({
+			url: baseUrl() + "TiposUsuario/eliminar",
+			type:"post",
+			async:false,
+			data: { id: id },
+			success:function(response){
+				var data = $.parseJSON(response);
+				if(data.finish == true){
+					Toast(data.message, data.status, data.title);
+					$(elem.modalOpciones).modal("hide");
+				}
+			}
+		});
+		
 	});
 });

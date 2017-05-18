@@ -18,6 +18,12 @@
 			"Template" => [
 				"default" => "templates/js/jqgrid/template.php"
 			]
+		],
+		"modal" => [			
+			"Template" => [
+				"default" => "templates/js/modal/template.php",
+				"sm" => "templates/js/modal/modal-sm.php",
+			]
 		]
 	];
 	

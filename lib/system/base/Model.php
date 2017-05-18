@@ -53,10 +53,12 @@ class Model{
 			}
 			
 			if(is_array($value)){
-				foreach($value as $operator => $val){
+				$where .= "(".$field." ".$value[0]." :".$field.")";
+				$params[$field] = $value[1];
+				/*foreach($value as $operator => $val){
 					$where .= "(".$field." ".$operator." :".$field.")";
 					$params[$field] = $val;
-				}
+				}*/
 			}else{
 				$where .= "(".$field." = :".$field.")";
 				$params[$field] = $value;
@@ -98,9 +100,16 @@ class Model{
 		$model = new static();
 		
 		$fields = [];
-		foreach($data as $field){
+		foreach($data as $field => $value){
 			$fields[] = $field;
 		}
+		
+		//created
+		if(!in_array("created",$fields)){
+			$fields[] = "created";
+			$data["created"] = date("Y-m-d H:i:s");
+		}
+		
 		$stringFields = implode(",",$fields);
 		$stringHidden = implode(",:",$fields);
 		
@@ -109,7 +118,39 @@ class Model{
 		$lastInsertId = DB::insert($sql,$data);
 		
 		$result = $model->find($lastInsertId);
-		print_r($result);
+		return $result;
+	}
+	
+	// Update
+	public static function update($data = []){
+		$model = new static();
+		
+		$fieldUpdated = 0;
+		$updates = [];
+		foreach($data as $field => $value){
+			$fields[] = $field."=':".$field."'";
+			if($field == "updated"){
+				$fieldUpdated++;
+			}
+		}
+		
+		//updated
+		if($fieldUpdated == 0){
+			$fields[] = "updated = :updated";
+			$data["updated"] = date("Y-m-d H:i:s");
+		}
+		
+		$stringUpdates = implode(",",$updates);
+		
+		$sql = "update ".$model->table." set ".$stringUpdates." where ".$model->primaryKey." = ':".$model->primaryKey."' ";
+		var_dump($model);die;
+		$modelArray = (array)$model;
+		var_dump($modelArray);die;
+		$data[$model->primaryKey] = $modelArray[$model->primaryKey];
+		die($sql);
+		$lastInsertId = DB::update($sql,$data);
+		
+		$result = $model->find($model[$model->primaryKey]);
 		return $result;
 	}
 	

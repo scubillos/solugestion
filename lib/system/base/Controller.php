@@ -22,11 +22,14 @@ class Controller{
 	public $session = "";
 	public $template = "";
 	protected $verifySession = true;
+	public $varsJs = "";
 	
 	public function __construct(){
-		$this->FrontEnd();
+		if(!$this->isAjaxRequest()){
+			$this->FrontEnd();
+			$this->ClassTemplate();
+		}
 		$this->ClassSession();
-		$this->ClassTemplate();
 	}
 	
 	//Se cargan JS,CSS,HTML
@@ -142,6 +145,9 @@ class Controller{
 			}
 		}
 		unset($routeViewModule);
+		if(!empty($this->varsJs)){
+			echo '<script type="text/javascript">'.$this->varsJs.'</script>';
+		}		
 		require($routeView);
 		unset($routeView);
 	}
@@ -184,6 +190,14 @@ class Controller{
 		}
 		
 		echo $headHTML;
+	}
+	
+	public function AddVarJS($vars){
+		if(is_array($vars) AND count($vars) != 0 ){
+			foreach($vars as $k => $value){
+				$this->varsJs .= "var ".$k." = '".$value."';";
+			}
+		}
 	}
 	
 	//Funcion para obtener url base del aplicativo
@@ -244,6 +258,15 @@ class Controller{
 		}
 	}
 	
+	//Funcion para saber si hay una peticion ajax
+	public function isAjaxRequest(){
+		if( !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' ){
+		   return true;
+		}else{
+		   return false;
+		}
+	}
+	
 	//Funcion para redireccionar
 	public function redirect($url){
 		header("location: ".URL_APP.$url);
@@ -285,6 +308,21 @@ class Controller{
 		}else{
 			throw new \Exception("Plugin template unknown");
 		}
+	}
+	
+	//Funcion para ejecutar un mensaje toast
+	public function Toast($message, $status = "success", $title = ""){
+		echo '<script type="text/javascript">
+		$(function(){
+			$.toast({
+				heading: "<b>'.$title.'</b>",
+				text: "'.$message.'",
+				icon: "'.$status.'",
+				position: "top-right",
+				hideAfter: 5000
+			});
+		});
+		</script>';
 	}
 }
 
