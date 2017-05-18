@@ -1,4 +1,4 @@
-<ul class="nav nav-pills nav-stacked">
+<ul class="nav nav-pills nav-stacked" style="position:fixed;">
 	<?php	
 	foreach($sidebar["permissions"] as $menu){
 		$hasSubmenus = ( isset($menu["submenus"]) AND is_array($menu["submenus"]) AND count($menu["submenus"])!=0 );

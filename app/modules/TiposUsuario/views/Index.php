@@ -1,3 +1,9 @@
+<style>
+.ui-jqgrid {
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
 <div class="wrapper">
 	<div class="navbar">
 		<?php $this->navbar(); ?>
@@ -69,3 +75,6 @@
 		</div>
 	</div>
 </div>
+<?php
+	$this->LoadTemplate("modal","ModalOpciones","sm");
+?>

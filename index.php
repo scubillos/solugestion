@@ -1,4 +1,6 @@
 <?php
+	date_default_timezone_set('America/Bogota');
+
 	include("app/config/config.php");
 
 	define("URL_APP",$config["URL_APP"]);
