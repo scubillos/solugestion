@@ -18,31 +18,66 @@ class DB{
 	}
 	
 	public static function query($sql,$params = []){
+		$statement = static::connection();
 		try{
-			$statement = static::connection();
 			$prepareStatement = $statement->prepare($sql);
+			
+			$statement->beginTransaction();
+			
 			$prepareStatement->execute($params);
 			$result = [];
-			if(static::verifyStatusExecute($prepareStatement)){
-				/*
-				if($prepareStatement->fetchColumn() > 0){
-					if($prepareStatement->fetchColumn() == 1){
-						$result[0] = $prepareStatement->fetch();
-						var_dump($result);
-					}else{
-						while($row = $prepareStatement->fetch()){
-							$result[] = $row;
-						}
-					}
-				}*/
-				
+			if(static::verifyStatusExecute($prepareStatement)){				
 				$result = $prepareStatement->fetchAll();
 			}
+			$statement->commit();
 		}catch(\PDOException $e){
+			$statement->rollback();
 			die($e->getMessage());
 		}
 		return $result;
 	}
+	
+	public static function insert($sql,$params = []){
+		$lastInsertId = 0;
+		$statement = static::connection();
+		try{
+			$prepareStatement = $statement->prepare($sql);
+			$statement->beginTransaction();
+			$prepareStatement->execute($params);
+			
+			if(static::verifyStatusExecute($prepareStatement)){
+				$lastInsertId = $statement->lastInsertId();
+			}
+			$statement->commit();
+		}catch(\PDOException $e){
+			$statement->rollback();
+			die($e->getMessage());
+		}
+		return $lastInsertId;
+	}
+	
+	public static function update($sql,$params = []){
+		$statement = static::connection();
+		try{
+			$prepareStatement = $statement->prepare($sql);
+			$statement->beginTransaction();
+			$prepareStatement->execute($params);
+			
+			if(static::verifyStatusExecute($prepareStatement)){
+				$lastInsertId = $statement->lastInsertId();
+			}
+			$statement->commit();
+		}catch(\PDOException $e){
+			$statement->rollback();
+			die($e->getMessage());
+		}
+		return $lastInsertId;
+	}
+	
+	/*
+	Verificaciones
+	*/
+	
 	
 	public static function verifyStatusExecute($prepareStatement){
 		$status = $prepareStatement->errorInfo();
@@ -52,22 +87,6 @@ class DB{
 			}
 		}
 		return true;
-	}
-	
-	public static function insert($sql,$params = []){
-		$lastInsertId = 0;
-		try{
-			$statement = static::connection();
-			$prepareStatement = $statement->prepare($sql);
-			$prepareStatement->execute($params);
-			
-			if(static::verifyStatusExecute($prepareStatement)){
-				$lastInsertId = $statement->lastInsertId();
-			}
-		}catch(\PDOException $e){
-			die($e->getMessage());
-		}		
-		return $lastInsertId;
 	}
 }
 ?>

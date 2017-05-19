@@ -21,9 +21,9 @@ class Login Extends Controller{
 			$users = $this->LoadModel("Usuarios/Usuarios");
 			$users = $users->where([ "correo" => $email ])->toArray();
 			if(count($users)==1){
-				$idbin = decbin($users[0]["id"]);
+				$idhex = dechex($users[0]["id"]);
 				$nombreus = $users[0]["nombre"];
-				$this->session->varSession_set("idbin",$idbin);
+				$this->session->varSession_set("idhex",$idhex);
 				$this->session->varSession_set("nombre",$nombreus);
 				$this->session->varSession_set("url_app",URL_APP);
 				

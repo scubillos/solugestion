@@ -16,9 +16,10 @@ class Model{
 	protected $primaryKey = "id";
 	protected $fields = [];
 	protected $rows = [];
+	protected $onlyOne = false;
 	
 	// Consultas
-	public static function find($keyValue){
+	/*public static function find($keyValue){
 		$model = new static();
 		
 		$sql = "select * from ".$model->table." where ".$model->primaryKey." = :key ";
@@ -27,9 +28,39 @@ class Model{
 		foreach($result as $key => $value){
 			if(in_array($key,$model->fields)){
 				$model->$key = $value;
+				$model->rows[0][$key] = $value;
 			}
 		}
 		return $model;
+	}
+	// Consultas por idx_encode
+	public static function findByIdx($keyValue){
+		$model = new static();
+		
+		$sql = "select * from ".$model->table." where idx_encode = :key ";		
+		$params = [":key" => $keyValue ];
+		$result = DB::query($sql,$params);
+		foreach($result as $key => $value){
+			if(in_array($key,$model->fields)){
+				$model->$key = $value;
+				$model->rows[0][$key] = $value;
+			}
+		}
+		return $model;
+	}*/
+	public static function find($keyValue){
+		$model = new static();
+		
+		$result = $model->where([$model->primaryKey => $keyValue]);
+		$result->onlyOne = true;
+		return $result;
+	}
+	public static function findByIdx($keyValue){
+		$model = new static();
+		
+		$result = $model->where(["idx_encode" => $keyValue]);
+		$result->onlyOne = true;
+		return $result;
 	}
 	public static function rawQuery($sql){
 		$model = new static();
@@ -55,10 +86,6 @@ class Model{
 			if(is_array($value)){
 				$where .= "(".$field." ".$value[0]." :".$field.")";
 				$params[$field] = $value[1];
-				/*foreach($value as $operator => $val){
-					$where .= "(".$field." ".$operator." :".$field.")";
-					$params[$field] = $val;
-				}*/
 			}else{
 				$where .= "(".$field." = :".$field.")";
 				$params[$field] = $value;
@@ -68,6 +95,16 @@ class Model{
 		$sql = "select * from ".$model->table." where ".$where;
 		
 		$result = DB::query($sql,$params);
+		
+		if(!in_array("created",$model->fields)){
+			$model->fields[] = "created";
+		}
+		if(!in_array("updated",$model->fields)){
+			$model->fields[] = "updated";
+		}
+		if(!in_array("idx_encode",$model->fields)){
+			$model->fields[] = "idx_encode";
+		}
 		
 		if(is_object($result)){
 			$model->rows[0] = (object)[];
@@ -109,12 +146,17 @@ class Model{
 			$fields[] = "created";
 			$data["created"] = date("Y-m-d H:i:s");
 		}
+		//Id unico para toda la base de datos codificado
+		$id_unique_db = static::increment_counter();
+		$fields[] = "idx_encode";
+		$data["idx_encode"] = md5($id_unique_db);
 		
 		$stringFields = implode(",",$fields);
 		$stringHidden = implode(",:",$fields);
 		
 		$sql = "insert into ".$model->table." (".$stringFields.") values (:".$stringHidden.") ";
 		//die($sql);
+		
 		$lastInsertId = DB::insert($sql,$data);
 		
 		$result = $model->find($lastInsertId);
@@ -122,41 +164,57 @@ class Model{
 	}
 	
 	// Update
-	public static function update($data = []){
-		$model = new static();
-		
-		$fieldUpdated = 0;
-		$updates = [];
-		foreach($data as $field => $value){
-			$fields[] = $field."=':".$field."'";
-			if($field == "updated"){
-				$fieldUpdated++;
+	public function update($data = []){
+		if(count($this->rows) == 1){
+			$fieldUpdated = 0;
+			$fields = [];
+			foreach($data as $field => $value){
+				$fields[] = $field." = :".$field." ";
+				if($field == "updated"){
+					$fieldUpdated++;
+				}
 			}
+			
+			//updated
+			if($fieldUpdated == 0){
+				$fields[] = "updated = :updated";
+				$data["updated"] = date("Y-m-d H:i:s");
+			}
+			
+			$stringUpdates = implode(",",$fields);
+			
+			$sql = "update ".$this->table." set ".$stringUpdates." where ".$this->primaryKey." = :".$this->primaryKey." ";
+			
+			$row = json_decode(json_encode($this->rows[0]), true);
+			
+			$data[$this->primaryKey] = $row[$this->primaryKey];
+			$lastInsertId = DB::update($sql,$data);
+			
+			$result = $this->find($row[$this->primaryKey]);
 		}
-		
-		//updated
-		if($fieldUpdated == 0){
-			$fields[] = "updated = :updated";
-			$data["updated"] = date("Y-m-d H:i:s");
-		}
-		
-		$stringUpdates = implode(",",$updates);
-		
-		$sql = "update ".$model->table." set ".$stringUpdates." where ".$model->primaryKey." = ':".$model->primaryKey."' ";
-		var_dump($model);die;
-		$modelArray = (array)$model;
-		var_dump($modelArray);die;
-		$data[$model->primaryKey] = $modelArray[$model->primaryKey];
-		die($sql);
-		$lastInsertId = DB::update($sql,$data);
-		
-		$result = $model->find($model[$model->primaryKey]);
 		return $result;
 	}
 	
 	// Funcion ToArray para convertir el objeto en un arreglo
 	public function toArray(){
-		return json_decode(json_encode($this->rows), true);
+		if($this->onlyOne == false){
+			return json_decode(json_encode($this->rows), true);
+		}else{
+			return json_decode(json_encode($this->rows[0]), true);
+		}
+	}
+	
+	static function increment_counter(){
+		
+		$data["created"] = date("Y-m-d H:i:s");
+		
+		$sql = "insert into ac_counter (created) values (:created) ";
+		
+		$last = DB::insert($sql,$data);
+		$dataDel["id"] = $last;
+		DB::query("delete from ac_counter where id < :id ",$dataDel);
+		
+		return $last;
 	}
 }
 
