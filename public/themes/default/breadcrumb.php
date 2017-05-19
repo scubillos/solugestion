@@ -18,7 +18,7 @@
 	</div>
 	<div class="col-xs-12 col-sm-12 col-md-3 col-lg-4 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-2">
 		<?php
-		if(isset($breadcrumb["opciones"])){
+		if(isset($breadcrumb["opciones"]) and count($breadcrumb["opciones"])!=0 ){
 			$nombre = isset($breadcrumb["opciones"]["nombre"]) ? $breadcrumb["opciones"]["nombre"] : "";
 			$class = isset($breadcrumb["opciones"]["class"]) ? $breadcrumb["opciones"]["class"] : "";
 			$id = isset($breadcrumb["opciones"]["id"]) ? $breadcrumb["opciones"]["id"] : "";

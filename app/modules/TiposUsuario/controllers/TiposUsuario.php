@@ -17,6 +17,9 @@ class TiposUsuario Extends Controller{
 				case "saved":
 					$this->Toast("Tipo de usuario guardado correctamente");
 				break;
+				case "updated":
+					$this->Toast("Tipo de usuario actualizado correctamente");
+				break;
 			}
 			
 			$this->AddVarJS(["toast_messag" => $status]);
@@ -40,15 +43,12 @@ class TiposUsuario Extends Controller{
 	
 	public function Crear(){
 		$data["breadcrumb"] = [
-			"titulo" => "Crear tipos de usuario",
+			"titulo" => "Crear tipo de usuario",
 			"ruta" => [
 				[ "nombre" => "Tipos de usuario", "url" => $this->UrlBase()."TiposUsuario" ],
 				[ "nombre" => "Crear" ]
 			],
-			"opciones" => [
-				"nombre" => "Crear",
-				"url" => $this->UrlBase()."TiposUsuario/Crear"
-			]
+			"opciones" => [ ]
 		];
 		
 		$this->RenderView("Crear",$data);
@@ -57,11 +57,40 @@ class TiposUsuario Extends Controller{
 	public function Guardar(){
 		if($_POST){
 			$campos = $_POST["campo"];
-			
-			$tipoUsuario = $this->tiposUsuario->insert($campos);
-			
-			$this->redirect("TiposUsuario/Index/saved");
+			if($campos["id_tipo"] == ""){
+				//Guardar registro nuevo
+				unset($campos["id_tipo"]);
+				$tipoUsuario = $this->tiposUsuario->insert($campos);
+				$this->redirect("TiposUsuario/Index/saved");
+			}else{
+				//Actualizar registro
+				$tipoUsuario = $this->tiposUsuario->find($campos["id_tipo"]);
+				unset($campos["id_tipo"]);
+				
+				$tipoUsuario->update($campos);
+				
+				$this->redirect("TiposUsuario/Index/updated");
+			}
 		}
+	}
+	
+	public function Editar($idx = ""){
+		if($idx == ""){
+			return false;
+		}
+		$tipoUsuario = $this->tiposUsuario->findByIdx($idx)->toArray();
+		
+		$data["data"] = $tipoUsuario;
+		$data["breadcrumb"] = [
+			"titulo" => "Editar tipo de usuario",
+			"ruta" => [
+				[ "nombre" => "Tipos de usuario", "url" => $this->UrlBase()."TiposUsuario" ],
+				[ "nombre" => "Editar" ]
+			],
+			"opciones" => [ ]
+		];
+		
+		$this->RenderView("Editar",$data);
 	}
 	
 	public function listar(){
@@ -69,7 +98,7 @@ class TiposUsuario Extends Controller{
 			return false;
 		}
 		
-		$tiposUsuario = $this->tiposUsuario->where(["estado" => ["!=", "0"] ])->toArray();
+		$tiposUsuario = $this->tiposUsuario->where(["id" => ["!=", "0"] ])->toArray();
 		
 		$response = new stdClass();
         $response->page     = $_POST["page"];
@@ -80,10 +109,11 @@ class TiposUsuario Extends Controller{
         if(count($tiposUsuario) != 0){
             foreach ($tiposUsuario AS $i => $row){
 				
-                $hidden_options = '<a href="#" class="btn btn-block btn-outline btn-primary">Editar</a>';
+				$link_editar = $this->UrlBase()."TiposUsuario/Editar/".strtoupper($row['idx_encode']);
+                $hidden_options = '<a href="'.$link_editar.'" class="btn btn-block btn-outline btn-primary" id="btnEditar"  >Editar</a>';
                 $hidden_options .= '<a href="#" id="btnEliminar" class="btn btn-block btn-outline btn-danger" data-id="'.$row['id'].'">Eliminar</a>';
 
-                $link_option = '<button class="viewOptions btn btn-success btn-sm" type="button" data-id="'.$row['id'].'"><i class="fa fa-cog"></i> <span class="hidden-xs hidden-sm hidden-md">Opciones</span></button>';
+                $link_option = '<button class="viewOptions btn btn-success btn-sm" type="button" data-id="'.$row['id'].'" ><i class="fa fa-cog"></i> <span class="hidden-xs hidden-sm hidden-md">Opciones</span></button>';
                 $response->rows[$i]["id"] = $row['id'];
                 $response->rows[$i]["cell"] = array(
                     $row['nombre_tipo'],
@@ -108,7 +138,6 @@ class TiposUsuario Extends Controller{
 		$id = $_POST["id"];
 		$tipoUsuario = $this->tiposUsuario->find($id);
 		$tipoUsuario->rawQuery("update usuarios_tipos set estado = 3 where id='".$id."' ");
-		$tipoUsuario->toArray();
 		
 		$response->finish = 1;
 		$response->status = "success";

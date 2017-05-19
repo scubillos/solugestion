@@ -10,6 +10,7 @@
 	$pluginsJS = [
 		"jqgrid" => [
 			"JS" => [
+				"app/generals/plugins/jqGrid/js/i18n/grid.locale-es.js",
 				"app/generals/plugins/jqGrid/js/jquery.jqGrid.min.js"
 			],
 			"CSS" => [

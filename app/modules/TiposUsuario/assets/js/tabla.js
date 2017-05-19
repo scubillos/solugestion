@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	
+	//Se definen elementos del DOM
 	var elem = {
 		idTable: "#TablaTiposUsuario",
 		pagerTable: "#TablaTiposUsuarioPager",
@@ -8,7 +8,7 @@ $(document).ready(function () {
 		botonEliminar: "#btnEliminar",
 	};
 	
-	
+	//jqGrid
 	$(elem.idTable).jqGrid({
 		url: baseUrl() + 'TiposUsuario/listar',
 		mtype: "post",
@@ -34,6 +34,7 @@ $(document).ready(function () {
 		viewrecords: true
 	});
 	
+	//Modal opciones
 	$(elem.idTable).on("click",elem.botonOpciones,function(e){
 		e.preventDefault();
 		e.returnValue=false;
@@ -48,7 +49,7 @@ $(document).ready(function () {
 		$(elem.modalOpciones).find('.modal-footer').empty();
 		$(elem.modalOpciones).modal('show');		
 	});
-	
+	//Eliminar
 	$(elem.modalOpciones).on("click",elem.botonEliminar,function(e){
 		e.preventDefault();
 		e.returnValue=false;
@@ -61,7 +62,7 @@ $(document).ready(function () {
 			type:"post",
 			async:false,
 			data: { id: id },
-			success:function(response){
+			success:function(response,status){
 				var data = $.parseJSON(response);
 				if(data.finish == true){
 					Toast(data.message, data.status, data.title);
