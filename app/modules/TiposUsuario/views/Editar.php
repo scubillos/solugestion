@@ -8,7 +8,7 @@
 	<div class="content">
 		<?php
 		$this->breadcrumb($breadcrumb);
-		$this->RenderView("TiposUsuario/Formulario",["data" => $data]);
+		$this->Formulario($data);
 		?>
 	</div>
 </div>

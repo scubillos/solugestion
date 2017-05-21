@@ -10,8 +10,13 @@
 			<label>Estado</label>					
 			<select class="form-control" id="estado" name="campo[estado]" >
 				<option value="">Seleccione</option>
-				<option value="1" <?php echo (isset($data["estado"]) AND $data["estado"] == 1) ? "selected" : ""; ?> >Activo</option>
-				<option value="0" <?php echo (isset($data["estado"]) AND $data["estado"] == 0) ? "selected" : ""; ?> >Inactivo</option>
+				<?php
+				foreach($estados as $estado => $value){
+				?>
+				<option value="<?php echo $value["valor"] ?>" <?php echo (isset($data["estado"]) AND $data["estado"] == $value["valor"]) ? "selected" : ""; ?> ><?php echo $value["texto"]; ?></option>
+				<?php
+				}
+				?>
 			</select>
 		</div>
 	</div>

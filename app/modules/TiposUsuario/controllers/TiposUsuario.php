@@ -54,6 +54,15 @@ class TiposUsuario Extends Controller{
 		$this->RenderView("Crear",$data);
 	}
 	
+	public function Formulario($info = []){
+		$catalogos = $this->LoadModel("AdmCatalogos/AdmCatalogos");
+		$estados = $catalogos->select("*")->where(["modulo" => "TiposUsuario", "tipo" => "Estado"])->toArray();
+		
+		$data["estados"] = $estados;
+		$data["data"] = $info;
+		$this->RenderView("Formulario",$data);
+	}
+	
 	public function Guardar(){
 		if($_POST){
 			$campos = $_POST["campo"];
@@ -98,7 +107,8 @@ class TiposUsuario Extends Controller{
 			return false;
 		}
 		
-		$tiposUsuario = $this->tiposUsuario->where(["id" => ["!=", "0"] ])->toArray();
+		//$tiposUsuario = $this->tiposUsuario->where(["id" => ["!=", "0"] ])->toArray();
+		$tiposUsuario = $this->tiposUsuario->select("*")->toArray();
 		
 		$response = new stdClass();
         $response->page     = $_POST["page"];
@@ -107,11 +117,14 @@ class TiposUsuario Extends Controller{
         $i=0;
 
         if(count($tiposUsuario) != 0){
+		
             foreach ($tiposUsuario AS $i => $row){
 				
 				$link_editar = $this->UrlBase()."TiposUsuario/Editar/".strtoupper($row['idx_encode']);
+				$link_permisos = $this->UrlBase()."Permisos/Editar/".strtoupper($row['idx_encode']);;
                 $hidden_options = '<a href="'.$link_editar.'" class="btn btn-block btn-outline btn-primary" id="btnEditar"  >Editar</a>';
                 $hidden_options .= '<a href="#" id="btnEliminar" class="btn btn-block btn-outline btn-danger" data-id="'.$row['id'].'">Eliminar</a>';
+                $hidden_options .= '<a href="'.$link_permisos.'" class="btn btn-block btn-outline btn-success" >Permisos</a>';
 
                 $link_option = '<button class="viewOptions btn btn-success btn-sm" type="button" data-id="'.$row['id'].'" ><i class="fa fa-cog"></i> <span class="hidden-xs hidden-sm hidden-md">Opciones</span></button>';
                 $response->rows[$i]["id"] = $row['id'];
