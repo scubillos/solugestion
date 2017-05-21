@@ -69,3 +69,6 @@
 		</div>
 	</div>
 </div>
+<?php
+	$this->LoadTemplate("modal","ModalOpciones","sm");
+?>
