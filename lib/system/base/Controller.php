@@ -206,7 +206,7 @@ class Controller{
 	}
 	
 	//Funcion para llamar metodo de otro controlador
-	public function callAction($url){
+	public function CallAction($url){
 		if($url == ""){
 			throw new \Exception("The action called not is defined");
 		}

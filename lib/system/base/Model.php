@@ -17,51 +17,10 @@ class Model{
 	protected $fields = [];
 	protected $rows = [];
 	protected $onlyOne = false;
+	protected $executing = 0;
+	protected $sqlSelect = [];
 	
-	// Consultas
-	/*public static function find($keyValue){
-		$model = new static();
-		
-		$sql = "select * from ".$model->table." where ".$model->primaryKey." = :key ";
-		$params = [":key" => $keyValue ];
-		$result = DB::query($sql,$params);
-		foreach($result as $key => $value){
-			if(in_array($key,$model->fields)){
-				$model->$key = $value;
-				$model->rows[0][$key] = $value;
-			}
-		}
-		return $model;
-	}
-	// Consultas por idx_encode
-	public static function findByIdx($keyValue){
-		$model = new static();
-		
-		$sql = "select * from ".$model->table." where idx_encode = :key ";		
-		$params = [":key" => $keyValue ];
-		$result = DB::query($sql,$params);
-		foreach($result as $key => $value){
-			if(in_array($key,$model->fields)){
-				$model->$key = $value;
-				$model->rows[0][$key] = $value;
-			}
-		}
-		return $model;
-	}*/
-	public static function find($keyValue){
-		$model = new static();
-		
-		$result = $model->where([$model->primaryKey => $keyValue]);
-		$result->onlyOne = true;
-		return $result;
-	}
-	public static function findByIdx($keyValue){
-		$model = new static();
-		
-		$result = $model->where(["idx_encode" => $keyValue]);
-		$result->onlyOne = true;
-		return $result;
-	}
+	// Escribir una consulta completa
 	public static function rawQuery($sql){
 		$model = new static();
 		
@@ -73,27 +32,193 @@ class Model{
 		}
 		return $model;
 	}
-	public static function where($data = []){
+	
+	// Consultas
+	public static function find($keyValue){
 		$model = new static();
 		
-		$params = [];
-		$where = "";
-		foreach($data as $field => $value){
-			if($where!=""){
-				$where .= " AND ";
-			}
-			
-			if(is_array($value)){
-				$where .= "(".$field." ".$value[0]." :".$field.")";
-				$params[$field] = $value[1];
-			}else{
-				$where .= "(".$field." = :".$field.")";
-				$params[$field] = $value;
+		$result = $model->select("*")->where([$model->primaryKey => $keyValue])->get();
+		$result->onlyOne = true;
+		return $result;
+	}
+	public static function findByIdx($keyValue){
+		$model = new static();
+		
+		$result = $model->select("*")->where(["idx_encode" => $keyValue])->get();
+		$result->onlyOne = true;
+		return $result;
+	}
+	public static function select($data){
+		$model = new static();
+		$model->executing = 1;
+		$model->sqlSelect = [ "fields" => [], "where" => [], "params" => [], "additional" => [ "groupBy" => [], "orderBy" => [], "limit" => 0, "offset" => 0 ] ];
+		
+		if(!is_array($data)){
+			$model->sqlSelect["fields"][] = $data;
+		}else{
+			foreach($data as $field){
+				$model->sqlSelect["fields"][] = $field;
 			}
 		}
+		return $model;
+	}
+	public function where($fieldC,$operation = "",$val = ""){
+		if(isset($this) AND $this->executing == 1){
+			$model = $this;
+		}else{
+			$model = new static();
+			$model->executing = 1;
+			$model->sqlSelect = [ "fields" => [ "*" ], "where" => [], "params" => [], "additional" => [ "groupBy" => [], "orderBy" => [], "limit" => 0, "offset" => 0 ] ];
+		}
 		
-		$sql = "select * from ".$model->table." where ".$where;
+		$params = $model->sqlSelect["params"];
+		if(is_array($fieldC)){
+			$data = $fieldC;
+			foreach($data as $field => $value){
+				if(is_array($value)){
+					$model->sqlSelect["where"][$field] = " ".$value[0]." :".$field." ";
+					$params[":".$field] = $value[1];
+				}else{
+					$model->sqlSelect["where"][$field] = " = :".$field." ";
+					$params[":".$field] = $value;
+				}
+			}
+		}else{
+			// solo se iguala
+			if($val == ""){
+				$model->sqlSelect["where"][$fieldC] = " = :".$fieldC." ";
+				$params[":".$fieldC] = $operation;
+			}else{
+				$model->sqlSelect["where"][$fieldC] = " ".$operation." :".$fieldC." ";
+				$params[":".$fieldC] = $val;
+			}
+		}
+		$model->sqlSelect["params"] = $params;
 		
+		return $model;
+	}
+	public function groupBy($data){
+		if(!isset($this)){
+			throw new \Exception("Error group by clause!!!. Uninitialized query");
+		}
+		if($this->executing != 1){
+			throw new \Exception("Error group by clause!!!. First run a query");
+		}
+		
+		$model = $this;
+		if(!is_array($data)){
+			$model->sqlSelect["additional"]["groupBy"][] = $data;
+		}else{
+			foreach($data as $field){
+				$model->sqlSelect["additional"]["groupBy"][] = $field;
+			}
+		}
+		return $model;
+	}
+	public function orderBy($data){
+		if(!isset($this)){
+			throw new \Exception("Error order by clause!!!. Uninitialized query");
+		}
+		if($this->executing != 1){
+			throw new \Exception("Error order by clause!!!. First run a query");
+		}
+		
+		$model = $this;
+		if(!is_array($data)){
+			$model->sqlSelect["additional"]["groupBy"][] = $data;
+		}else{
+			foreach($data as $field){
+				$model->sqlSelect["additional"]["groupBy"][] = $field;
+			}
+		}
+		return $model;
+	}
+	public function limit($limit){
+		if(!isset($this)){
+			throw new \Exception("Error limit clause!!!. Uninitialized query");
+		}
+		if($this->executing != 1){
+			throw new \Exception("Error limit clause!!!. First run a query");
+		}
+		
+		$model = $this;
+		$model->sqlSelect["additional"]["limit"][] = $limit;
+		
+		return $model;
+	}
+	public function offset($offset){
+		if(!isset($this)){
+			throw new \Exception("Error offset clause!!!. Uninitialized query");
+		}
+		if($this->executing != 1){
+			throw new \Exception("Error offset clause!!!. First run a query");
+		}
+		
+		$model = $this;
+		$model->sqlSelect["additional"]["offset"][] = $offset;
+		
+		return $model;
+	}
+	public function get(){
+		if(!isset($this)){
+			throw new \Exception("Error offset clause!!!. Uninitialized query");
+		}
+		if($this->executing != 1){
+			throw new \Exception("Error offset clause!!!. First run a query");
+		}
+		$model = $this;
+		
+		$sqlSelect = $model->sqlSelect;
+		$sql = "";
+		
+		//Campos seleccionados
+		$fields = implode(",",$sqlSelect["fields"]);
+		
+		//Se arma el query base
+		$sql = "SELECT ".$fields." FROM ".$model->table;
+		
+		// condiciones where
+		if(count($sqlSelect["where"]) != 0){
+			$where = "where ";
+			$count = 0;
+			foreach($sqlSelect["where"] as $field => $value ){
+				if($count != 0){
+					$where .= " AND ";
+				}
+				$where .= $field." ".$value;
+				$count++;
+			}
+			$sql .= " ".$where;
+		}
+		
+		// additionals
+		$additional = $sqlSelect["additional"];
+		// group by
+		if(count($additional["groupBy"]) != 0){
+			$groupBy = implode(",",$additional["groupBy"]);
+			
+			$sql .= " GROUP BY ".$groupBy;
+		}
+		// order by
+		if(count($additional["orderBy"]) != 0){
+			$orderBy = implode(",",$additional["orderBy"]);
+			
+			$sql .= " ORDER BY ".$orderBy;
+		}
+		// limit
+		if($additional["limit"] != 0){
+			$limit = $additional["limit"];
+			$sql .= " LIMIT ".$limit;
+		}
+		// offset
+		if($additional["offset"] != 0){
+			$offset = $additional["offset"];
+			$sql .= " OFFSET ".$offset;
+		}
+		// parametros
+		$params = $sqlSelect["params"];
+
+		// Se ejecuta el query
 		$result = DB::query($sql,$params);
 		
 		if(!in_array("created",$model->fields)){
@@ -105,7 +230,6 @@ class Model{
 		if(!in_array("idx_encode",$model->fields)){
 			$model->fields[] = "idx_encode";
 		}
-		
 		if(is_object($result)){
 			$model->rows[0] = (object)[];
 			foreach($result as $key => $value){
@@ -128,8 +252,27 @@ class Model{
 				$k++;
 			}
 		}
-		
+		$model->executing = 2;
+		unset($model->sqlSelect);
 		return $model;
+	}
+	// Funcion ToArray para convertir el objeto en un arreglo
+	public function toArray(){
+		if(!isset($this)){
+			throw new \Exception("Error array coversion!!!. Uninitialized query");
+		}
+		if($this->executing == 0){
+			throw new \Exception("Error array coversion!!!. First run a query");
+		}
+		if($this->executing == 1){
+			$this->get();
+		}
+		
+		if($this->onlyOne == false){
+			return json_decode(json_encode($this->rows), true);
+		}else{
+			return json_decode(json_encode($this->rows[0]), true);
+		}
 	}
 	
 	// Insert
@@ -195,15 +338,25 @@ class Model{
 		return $result;
 	}
 	
-	// Funcion ToArray para convertir el objeto en un arreglo
-	public function toArray(){
-		if($this->onlyOne == false){
-			return json_decode(json_encode($this->rows), true);
-		}else{
-			return json_decode(json_encode($this->rows[0]), true);
+	// Relaciones
+	// Uno a muchos
+	public function oneMany($tableRelation,$localField,$destField){
+		$model = $this;
+		
+		foreach($model->rows as $k => $row){
+			$modelRel = new static();
+			$valLocal = $row[$localField];
+			$modelRel->table = $tableRelation;
+			$modelRel->where($destField,$valLocal);
+			
 		}
+		
 	}
 	
+	/* 
+	Incrementador de id, contador general de todos los registros de la base de datos. 
+	Cada registro en toda la base de datos contiene este id encriptado en md5 para el campo idx_encode
+	*/
 	static function increment_counter(){
 		
 		$data["created"] = date("Y-m-d H:i:s");

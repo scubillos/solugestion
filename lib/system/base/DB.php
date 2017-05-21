@@ -23,10 +23,9 @@ class DB{
 			$prepareStatement = $statement->prepare($sql);
 			
 			$statement->beginTransaction();
-			
 			$prepareStatement->execute($params);
 			$result = [];
-			if(static::verifyStatusExecute($prepareStatement)){				
+			if(static::verifyStatusExecute($prepareStatement)){
 				$result = $prepareStatement->fetchAll();
 			}
 			$statement->commit();
@@ -84,6 +83,7 @@ class DB{
 		if(is_array($status) AND count($status)!=0){
 			if($status[0]!="00000"){
 				throw new \Exception("Error #".$status[0]." => ".$status[2]);
+				die;
 			}
 		}
 		return true;
