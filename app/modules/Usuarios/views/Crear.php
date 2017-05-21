@@ -9,6 +9,8 @@
 		<?php
 		$this->breadcrumb($breadcrumb);
 		?>
+	</div>
+		<div class="content1"> 
 		<form action="<?php echo $this->UrlBase(); ?>Usuarios/Guardar" method="post" id="CrearForm">
 			<div class="row col-lg-12 col-md-12">
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
@@ -24,57 +26,54 @@
 						<option value="2">Opcion3</option>
 					</select>
 				</div>
-			</div>
-			<div class="row col-lg-12 col-md-12">
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 					<label>Nit</label>
-					<input type="number" class="form-control" id="nit" name="campo[nit]"  required />
+					<input type="text" class="form-control" id="nit" name="campo[nit]"  required />
 				</div>
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 					<label>Direccion</label>					
 					<input type="text" class="form-control" id="dir" name="campo[direccion]" required />
 				</div>
 			</div>
+			
 			<div class="row col-lg-12 col-md-12">
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 					<label>Telefono</label>
-					<input type="number" class="form-control" id="tel" name="campo[telefono]" required />
+					<input type="text" class="form-control" id="tel" name="campo[telefono]" required />
 				</div>
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 					<label>Persona de contacto</label>					
 					<input type="text" class="form-control" id="percont" name="campo[percontac]" required />
 				</div>
-			</div>
-			<div class="row col-lg-12 col-md-12">
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 					<label>Telefono persona de contacto</label>
-					<input type="number" class="form-control" id="telpercont" name="campo[telpercontac]" required />
+					<input type="text" class="form-control" id="telpercont" name="campo[telpercontac]" required />
 				</div>
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 					<label>Responsable</label>					
 					<input type="text" class="form-control" id="responsable" name="campo[responsable]" required />
 				</div>
 			</div>
+			
 			<div class="row col-lg-12 col-md-12">
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 					<label>Numero movil</label>
-					<input type="number" class="form-control" id="nummovil" name="campo[nummovil]" required />
+					<input type="text" class="form-control" id="nummovil" name="campo[nummovil]" required />
 				</div>
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 					<label>Correo</label>					
 					<input type="email" class="form-control" id="mail" name="campo[mail]" required />
 				</div>
-			</div>
-			<div class="row col-lg-12 col-md-12">
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 					<label>contraseña</label>
-					<input type="password" class="form-control" id="pass" name="campo[pass]" required />
+					<input type="password" class="form-control" id="pass" name="pass" required />
 				</div>
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 					<label>Repita su contraseña</label>					
-					<input type="password" class="form-control" id="rpass" name="campo[rpass]" required />
+					<input type="password" class="form-control" id="rpass" name="rpass" required />
 				</div>
 			</div>
+			
 			<div class="row col-lg-12 col-md-12">
 			<div class="row">
 				<div class="col-xs-0 col-sm-6 col-md-8 col-lg-8">&nbsp;</div>
@@ -87,5 +86,5 @@
 			</div>
 			</div>
 		</form>
+		</div>
 	</div>
-</div>
