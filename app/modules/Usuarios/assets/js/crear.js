@@ -13,15 +13,15 @@ $(function() {
 				number: true
 			},
 
-			"campo[telpercontac]":{
+			"campo[num_percontacto]":{
 				number: true
 			},
 
-			"campo[numovil]":{
+			"campo[num_movil]":{
 				number: true
 			},
 
-			"campo[mail]":{
+			"campo[correo]":{
 				email: true
 			},
 
@@ -33,9 +33,9 @@ $(function() {
 		messages: {
 			"campo[nit]": "Este campo debe ser un número",
 			"campo[telefono]": "Este campo debe ser un número",
-			"campo[telpercontac]": "Este campo debe ser un número",
-			"campo[numovil]": "Este campo debe ser un número",
-			"campo[mail]": "Ingrese una direccion de correo valida",
+			"campo[num_percontacto]": "Este campo debe ser un número",
+			"campo[num_movil]": "Este campo debe ser un número",
+			"campo[correo]": "Ingrese una direccion de correo valida",
 			rpass: "Las contraseñas no coinciden"
 		},
 		errorElement: "em",
