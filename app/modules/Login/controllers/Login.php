@@ -11,15 +11,22 @@ class Login Extends Controller{
 	}
 	
 	public function Index(){
+		if($_GET){
+			if($_GET["invalid"]==1){
+				$this->Toast("Usuario o contraseña no valido","error","Error login");
+			}
+		}
 		$this->AddJs("modules/Login/assets/js/login.js");
 		$this->RenderView("Index");
+
 	}
 	
 	public function Auth(){
 		if($_POST){
 			$email = $_POST["usuario"];
+			$pass = md5($_POST["pass"]);
 			$users = $this->LoadModel("Usuarios/Usuarios");
-			$users = $users->where([ "correo" => $email ])->toArray();
+			$users = $users->where(["correo" => $email, "pass" => $pass ])->toArray();
 			if(count($users)==1){
 				$idhex = dechex($users[0]["id"]);
 				$nombreus = $users[0]["nombre"];
