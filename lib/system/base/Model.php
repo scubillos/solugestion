@@ -19,6 +19,8 @@ class Model{
 	protected $onlyOne = false;
 	protected $executing = 0;
 	protected $sqlSelect = [];
+	protected $relationsSelect = [];
+	protected $currentRelation = "";
 	
 	// Escribir una consulta completa
 	public static function rawQuery($sql){
@@ -63,6 +65,7 @@ class Model{
 		return $model;
 	}
 	public function where($fieldC,$operation = "",$val = ""){
+		
 		if(isset($this) AND $this->executing == 1){
 			$model = $this;
 		}else{
@@ -159,6 +162,26 @@ class Model{
 		
 		return $model;
 	}
+	//Relaciones
+	public function relations($data){
+		if(!isset($this)){
+			throw new \Exception("Error getting relations!!!. Uninitialized query");
+		}
+		if($this->executing != 1){
+			throw new \Exception("Error getting relations!!!. First run a query");
+		}
+		
+		$model = $this;
+		$model->relationsSelect = [];
+		if(!is_array($data)){
+			$model->relationsSelect[] = $data;
+		}else{
+			foreach($data as $relation){
+				$model->relationsSelect[] = $relation;
+			}
+		}
+		return $model;
+	}
 	public function get(){
 		if(!isset($this)){
 			throw new \Exception("Error offset clause!!!. Uninitialized query");
@@ -230,6 +253,8 @@ class Model{
 		if(!in_array("idx_encode",$model->fields)){
 			$model->fields[] = "idx_encode";
 		}
+		
+		//Se obtiene la info para el atributo rows
 		if(is_object($result)){
 			$model->rows[0] = (object)[];
 			foreach($result as $key => $value){
@@ -252,12 +277,87 @@ class Model{
 				$k++;
 			}
 		}
+		
+		//Se obtienen las relaciones
+		$relations = $model->relationsSelect;
+		if(count($relations) != 0){
+			foreach($relations as $relation){
+				if( method_exists($model,$relation) ){
+					$model->currentRelation = $relation;
+					$model->$relation();
+				}
+			}
+		}
+		
 		$model->executing = 2;
 		unset($model->sqlSelect);
 		return $model;
 	}
+	
+	public function toSql(){
+		if(!isset($this)){
+			throw new \Exception("Error offset clause!!!. Uninitialized query");
+		}
+		if($this->executing != 1){
+			throw new \Exception("Error offset clause!!!. First run a query");
+		}
+		$model = $this;
+		
+		$sqlSelect = $model->sqlSelect;
+		$sql = "";
+		
+		//Campos seleccionados
+		$fields = implode(",",$sqlSelect["fields"]);
+		
+		//Se arma el query base
+		$sql = "SELECT ".$fields." FROM ".$model->table;
+		
+		// condiciones where
+		if(count($sqlSelect["where"]) != 0){
+			$where = "where ";
+			$count = 0;
+			foreach($sqlSelect["where"] as $field => $value ){
+				if($count != 0){
+					$where .= " AND ";
+				}
+				$where .= $field." ".$value;
+				$count++;
+			}
+			$sql .= " ".$where;
+		}
+		
+		// additionals
+		$additional = $sqlSelect["additional"];
+		// group by
+		if(count($additional["groupBy"]) != 0){
+			$groupBy = implode(",",$additional["groupBy"]);
+			
+			$sql .= " GROUP BY ".$groupBy;
+		}
+		// order by
+		if(count($additional["orderBy"]) != 0){
+			$orderBy = implode(",",$additional["orderBy"]);
+			
+			$sql .= " ORDER BY ".$orderBy;
+		}
+		// limit
+		if($additional["limit"] != 0){
+			$limit = $additional["limit"];
+			$sql .= " LIMIT ".$limit;
+		}
+		// offset
+		if($additional["offset"] != 0){
+			$offset = $additional["offset"];
+			$sql .= " OFFSET ".$offset;
+		}
+		
+		die($sql);
+	}
+	
 	// Funcion ToArray para convertir el objeto en un arreglo
 	public function toArray(){
+		
+		
 		if(!isset($this)){
 			throw new \Exception("Error array coversion!!!. Uninitialized query");
 		}
@@ -266,6 +366,9 @@ class Model{
 		}
 		if($this->executing == 1){
 			$this->get();
+		}
+		if(count($this->rows)==0){
+			return NULL;
 		}
 		
 		if($this->onlyOne == false){
@@ -338,19 +441,137 @@ class Model{
 		return $result;
 	}
 	
-	// Relaciones
-	// Uno a muchos
-	public function oneMany($tableRelation,$localField,$destField){
-		$model = $this;
+	// Borrar datos
+	public function delete($fieldC,$operation = "",$val = ""){
+		$model = new static();
 		
-		foreach($model->rows as $k => $row){
-			$modelRel = new static();
-			$valLocal = $row[$localField];
-			$modelRel->table = $tableRelation;
-			$modelRel->where($destField,$valLocal);
-			
+		$fields = [];
+		$params = [];
+		if(is_array($fieldC)){
+			$data = $fieldC;
+			foreach($data as $field => $value){
+				if(is_array($value)){
+					$fields[$field] = " ".$value[0]." :".$field." ";
+					$params[":".$field] = $value[1];
+				}else{
+					$fields[$field] = " = :".$field." ";
+					$params[":".$field] = $value;
+				}
+			}
+		}else{
+			// solo se iguala
+			if($val == ""){
+				$fields[$fieldC] = " = :".$fieldC." ";
+				$params[":".$fieldC] = $operation;
+			}else{
+				$fields[$fieldC] = " ".$operation." :".$fieldC." ";
+				$params[":".$fieldC] = $val;
+			}
 		}
 		
+		$sql = "DELETE FROM ".$model->table." ";
+		
+		// condiciones where
+		if(count($fields) != 0){
+			$where = "WHERE ";
+			$count = 0;
+			foreach($fields as $field => $value ){
+				if($count != 0){
+					$where .= " AND ";
+				}
+				$where .= $field." ".$value;
+				$count++;
+			}
+			$sql .= " ".$where;
+		}
+		
+		$result = DB::query($sql,$params);
+		
+		return $result;
+	}
+	
+	// Relaciones
+	// Uno a muchos
+	public function oneMany($tableRelation,$tableField,$relField){
+		$model = $this;
+		$nameRel = $this->currentRelation;
+		for($i=0; $i < count($model->rows); $i++){
+			$modelRel = new static();
+			$modelRel->table = $tableRelation;
+			$modelRel->executing = 1;
+			$modelRel->sqlSelect = [ "fields" => [ "*" ], "where" => [], "params" => [] ];
+			
+			$row = $model->rows[$i];
+			
+			$valLocal = $row->$relField;
+			$oneManyRes = $modelRel->where($tableField,$valLocal)->getRel()->toArray();
+			if(count($modelRel->rows)!=0){				
+				$model->rows[$i]->$nameRel = $oneManyRes;
+			}
+		}
+		
+		return $model;
+	}
+	public function getRel(){
+		if(!isset($this)){
+			throw new \Exception("Error offset clause!!!. Uninitialized query");
+		}
+		if($this->executing != 1){
+			throw new \Exception("Error offset clause!!!. First run a query");
+		}
+		$model = $this;
+		
+		$sqlSelect = $model->sqlSelect;
+		$sql = "";
+		
+		//Campos seleccionados
+		$fields = implode(",",$sqlSelect["fields"]);
+		
+		//Se arma el query base
+		$sql = "SELECT ".$fields." FROM ".$model->table;
+		
+		// condiciones where
+		if(count($sqlSelect["where"]) != 0){
+			$where = "where ";
+			$count = 0;
+			foreach($sqlSelect["where"] as $field => $value ){
+				if($count != 0){
+					$where .= " AND ";
+				}
+				$where .= $field." ".$value;
+				$count++;
+			}
+			$sql .= " ".$where;
+		}
+		// parametros
+		$params = $sqlSelect["params"];
+		
+		// Se ejecuta el query
+		$result = DB::query($sql,$params);
+		
+		//Se obtiene la info para el atributo rows
+		if(is_object($result)){
+			$model->rows[0] = (object)[];
+			foreach($result as $key => $value){
+				$model->$key = $value;
+				$model->rows[0]->$key = $value;
+			}
+		}else if(is_array($result)){
+			$k = 0;
+			foreach($result as $row){
+				foreach($row as $key => $value){
+					if(!isset($model->rows[$k]) OR !is_object($model->rows[$k])){
+						$model->rows[$k] = (object)[];
+					}
+					$model->rows[$k]->$key = $value;
+				}
+				$k++;
+			}
+		}
+		
+		$model->executing = 2;
+		unset($model->sqlSelect);
+		return $model;
 	}
 	
 	/* 
