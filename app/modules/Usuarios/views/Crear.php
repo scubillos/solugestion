@@ -9,7 +9,6 @@
 		<?php
 		$this->breadcrumb($breadcrumb);
 		?>
-	</div>
 		<div class="content1"> 
 		<form action="<?php echo $this->UrlBase(); ?>Usuarios/Guardar" method="post" id="CrearForm">
 			<input type="hidden" name="campo[id]" value="<?php echo isset($data["id"]) ? $data["id"] : ""; ?>">
@@ -22,9 +21,13 @@
 					<label>Tipo de usuario</label>					
 					<select class="form-control" id="TipoUsuario" name="campo[tipo_usuario]" value="<?php echo isset($data["tipo_usuario"]) ? $data["tipo_usuario"] : ""; ?>" required>
 						<option value="">Seleccione</option>
-						<option value="0">Opcion1</option>
-						<option value="1">Opcion2</option>
-						<option value="2">Opcion3</option>
+						<?php
+						foreach($tiposUsuario as $key => $value){
+						?>
+						<option value="<?php echo $value["id"]; ?>" <?php echo (isset($data["tipo_usuario"]) AND $data["tipo_usuario"] == $value["id"]) ? "selected" : ""; ?> ><?php echo $value["nombre_tipo"]; ?></option>
+						<?php
+						}
+						?>						
 					</select>
 				</div>
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
@@ -89,3 +92,4 @@
 		</form>
 		</div>
 	</div>
+</div>

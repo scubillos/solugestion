@@ -1,4 +1,4 @@
-
+<div class="content1">
 <form action="<?php echo $this->UrlBase(); ?>TiposUsuario/Guardar" method="post">
 	<input type="hidden" name="campo[id_tipo]" value="<?php echo isset($data["id"]) ? $data["id"] : ""; ?>" />
 	<div class="row col-lg-12 col-md-12">
@@ -30,3 +30,4 @@
 		</div>
 	</div>
 </form>
+</div>

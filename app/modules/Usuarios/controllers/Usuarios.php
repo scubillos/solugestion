@@ -53,7 +53,7 @@ class Usuarios Extends Controller{
 				"url" => $this->UrlBase()."Usuarios/Crear"
 			]
 		];
-		
+		$data["tiposUsuario"] = $this->LoadModel("TiposUsuario/TiposUsuario")->select(["id","nombre_tipo"])->where("estado",1)->toArray();
 		$this->RenderView("Crear",$data);
 	}
 	
@@ -97,7 +97,14 @@ class Usuarios Extends Controller{
         $i=0;
 
         if(count($Usuarios) != 0){
+			// PROVICIONAL. CAMBIAR CUANDO SE CREE LA FUNCION PARA RELACIONES UNO A UNO
+			$TipoUsuario = $this->LoadModel("TiposUsuario/TiposUsuario");
             foreach ($Usuarios AS $i => $row){
+				
+				// PROVICIONAL. CAMBIAR CUANDO SE CREE LA FUNCION PARA RELACIONES UNO A UNO
+				$tipo = $TipoUsuario->where("id",$row["tipo_usuario"])->toArray();
+				
+				$tipo_usuario_txt = $tipo[0]["nombre_tipo"];
 				
 				$link_editar = $this->UrlBase()."Usuarios/Editar/".strtoupper($row['idx_encode']);
                 $hidden_options = '<a href="'.$link_editar.'" class="btn btn-block btn-outline btn-primary" id="btnEditar"  >Editar</a>';
@@ -107,7 +114,7 @@ class Usuarios Extends Controller{
                 $response->rows[$i]["id"] = $row['id'];
                 $response->rows[$i]["cell"] = array(
                     $row['nombre'],
-                    $row['tipo_usuario'],
+                    $tipo_usuario_txt,
                     $row['persona_contacto'],
                     $row['num_percontacto'],
                     $row['estado'],
@@ -137,7 +144,7 @@ class Usuarios Extends Controller{
 			],
 			"opciones" => [ ]
 		];
-		
+		$data["tiposUsuario"] = $this->LoadModel("TiposUsuario/TiposUsuario")->select(["id","nombre_tipo"])->where("estado",1)->toArray();
 		$this->RenderView("Crear",$data);
 	}
 
