@@ -43,13 +43,15 @@
 
 .content {
 	margin-left: var(--widthSidebar) !important;
+	margin-right: 40px !important;
 }
 
 .content1 {
-	margin-left: var(--widthSidebar) !important;
+	/* margin-left: var(--widthSidebar) !important; */
 	overflow: hidden !important;
 	box-shadow: 5px 5px 10px #aaa;
 	border-radius: 5px;
+	padding: 2em !important;
 }
 
 .content-filters{

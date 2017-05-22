@@ -18,7 +18,7 @@ $(document).ready(function () {
 		colModel: [
 			{ name: 'nombre_tipo', width: 75 },
 			{ name: 'estado', width: 150 },
-			{ name: '', width: 50 },
+			{ name: '', width: 50, align: 'center' },
 			{ name: 'link', width: 150, hidden:true }
 		],
 		height: "auto",
