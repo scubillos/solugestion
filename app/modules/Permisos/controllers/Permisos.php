@@ -15,6 +15,11 @@ class Permisos Extends Controller{
 		
 		$this->AddJS('modules/Permisos/assets/js/editar.js');
 		$this->AddCSS('modules/Permisos/assets/css/editar.css');
+		$tipoUsuario = $this->LoadModel("TiposUsuario/TiposUsuario")->findByIdx($tipoUser)->toArray();
+		if($tipoUsuario == NULL){
+			die("Tipo de usuario no valido");
+		}
+		
 		$data["breadcrumb"] = [
 			"titulo" => "Permisos de usuarios",
 			"ruta" => [
@@ -23,31 +28,29 @@ class Permisos Extends Controller{
 			]
 		];
 		$data["idx"] = $tipoUser;
+		$data["id_tipousuario"] = $tipoUsuario["id"];
 		$this->RenderView("Editar",$data);
 	}
 	
 	public function Guardar(){
 		if($_POST){
-			$campos = $_POST["campo"];
-			if($campos["id"] == ""){
-				//Guardar registro nuevo
-				unset($campos["id"]);
-				$admCatalogos = $this->admCatalogos->insert($campos);
-				$this->redirect("Permisos/Index/saved");
-			}else{
-				//Actualizar registro
-				$admCatalogos = $this->admCatalogos->find($campos["id"]);
-				unset($campos["id"]);
-				
-				$admCatalogos->update($campos);
-				
-				$this->redirect("Permisos/Index/updated");
+			$usuariosTiposPermisos = $this->LoadModel("UsuariosTiposPermisos");
+			$id_tipo_usuario = $_POST["id_tipousuario"];
+			if( isset($_POST["permisos"]) ){
+				$usuariosTiposPermisos->delete("id_tipo_usuario",$id_tipo_usuario);
+				$permisos = $_POST["permisos"];
+				foreach($permisos as $permiso){
+					$campos = [ "id_tipo_usuario" => $id_tipo_usuario, "id_permiso" => $permiso ];
+					$usuariosTiposPermisos->insert($campos);
+				}
 			}
 		}
+		$this->redirect("TiposUsuario");
 	}
 	
 	public function getPermisos($idx){
-		$permisos = $this->Permisos->select("*")->toArray();
+		$permisos = $this->Permisos->where("id_padre",0)->relations(["submenus"])->toArray();
+		
 		return $permisos;
 	}
 	
