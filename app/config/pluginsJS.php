@@ -14,7 +14,8 @@
 				"app/generals/plugins/jqGrid/js/jquery.jqGrid.min.js"
 			],
 			"CSS" => [
-				"app/generals/plugins/jqGrid/css/ui.jqgrid-bootstrap.css"
+				"app/generals/plugins/jqGrid/css/ui.jqgrid-bootstrap.css",
+				"app/generals/plugins/jqGrid/css/custom.css"
 			],
 			"Template" => [
 				"default" => "templates/js/jqgrid/template.php"

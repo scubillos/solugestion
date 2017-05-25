@@ -16,7 +16,7 @@
 					if(in_array($submenu["id"],$sidebar["permissions_auth"])){
 					?>
 					<li role="presentation">
-						<a href="<?php echo $sidebar["url_app"].$submenu["url"] ?>" ><span class="<?php echo $submenu["icono"]; ?>"></span><?php echo $submenu["nombre"]; ?></a>
+						<a href="<?php echo $sidebar["url_app"].$submenu["url"] ?>" ><span class="<?php echo $submenu["icono"]; ?>"></span> <?php echo $submenu["nombre"]; ?></a>
 					</li>
 					<?php
 					}
