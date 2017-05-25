@@ -4,11 +4,22 @@
 	<div class="row col-lg-12 col-md-12">
 		<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 			<label>Paso</label>
-			<input type="text" class="form-control" id="paso" name="campo[paso]" value="<?php echo isset($data["paso"]) ? $data["paso"] : ""; ?>" />
+			<select class="form-control" id="paso" name="campo[paso]">
+				<option value="">Seleccione</option>
+				<?php
+				foreach($Pasos as $key => $paso){
+				?>
+				<option value="<?php echo $paso["id"] ?>" <?php echo (isset($data["paso"]) AND $data["paso"]==$paso["id"]) ? $data["paso"] : ""; ?>><?php echo $paso["texto"] ?></option>
+				<?php
+				}
+				?>
+			</select>
 		</div>
 		<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 			<label>Sección</label>
-			<input type="text" class="form-control" id="seccion" name="campo[seccion]" value="<?php echo isset($data["seccion"]) ? $data["seccion"] : ""; ?>" />
+			<select class="form-control" id="paso" name="campo[paso]">
+				<option value="">Seleccione primero un paso</option>
+			</select>
 		</div>
 		<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 			<label>Subsección</label>					

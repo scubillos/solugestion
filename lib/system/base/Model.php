@@ -370,7 +370,6 @@ class Model{
 		if(count($this->rows)==0){
 			return NULL;
 		}
-		
 		if($this->onlyOne == false){
 			return json_decode(json_encode($this->rows), true);
 		}else{

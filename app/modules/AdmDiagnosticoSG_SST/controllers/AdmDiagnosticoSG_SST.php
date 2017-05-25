@@ -5,10 +5,12 @@ class AdmDiagnosticoSG_SST Extends Controller{
 	public $titlePage = ".: Administrar catálogos - Solugestion :."; //Para el titulo de la pagina
 	
 	public $admDiagnostico;
+	public $diagnosticoCatalogos;
 	
 	public function __construct(){
 		parent::__construct();
 		$this->admDiagnostico = $this->LoadModel("AdmDiagnostico");
+		$this->diagnosticoCatalogos = $this->LoadModel("DiagnosticoCatalogos");
 	}
 	
 	public function Index($status = ""){
@@ -50,6 +52,10 @@ class AdmDiagnosticoSG_SST Extends Controller{
 				[ "nombre" => "Crear" ]
 			]
 		];
+		
+		//Se obtienen los pasos de los catalogos principales - tipo=0
+		$data["Pasos"] = $this->diagnosticoCatalogos->select(["id","texto"])->where(["estado" => 1,"id_padre"=>0])->toArray();
+		
 		$this->RenderView("Crear",$data);
 	}
 	
@@ -69,6 +75,9 @@ class AdmDiagnosticoSG_SST Extends Controller{
 				[ "nombre" => "Editar" ]
 			]
 		];
+		//Se obtienen los pasos de los catalogos principales - tipo=0
+		$data["Pasos"] = $this->diagnosticoCatalogos->select(["id","texto"])->where(["estado" => 1,"id_padre"=>0])->toArray();
+		
 		$this->RenderView("Crear",$data);
 	}
 	
@@ -92,14 +101,21 @@ class AdmDiagnosticoSG_SST Extends Controller{
 		}
 	}
 	
-	public function ajax_editar(){
+	public function ajax_buscarSecciones(){
 		if(!$this->isAjaxRequest()){
 			return false;
 		}
-		$id = $_POST["id"];
-		$infoCat = $this->admDiagnostico->find($id)->toArray();
+		$id_paso = $_POST["id_paso"];
 		
-		echo json_encode($infoCat);
+		$options = $this->diagnosticoCatalogos->select(["id","texto"])->where("id_padre",$id_paso)->toArray();
+		var_dump($options);
+		$response = new stdClass();
+		$response->finish = 0;
+		if(count($options)!=0){
+			$response->finish = 1;
+			$response->options = $options;
+		}
+		echo json_encode($response);
 		exit;
 	}
 	
