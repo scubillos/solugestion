@@ -1,9 +1,10 @@
 <div id="wrapper">	
-	<div class="container1">
-		<h1 class="h1, text-center">LOGIN</h1>
 	</div>
 	<section>
 		<div class="container">
+			<div class="cont1">
+			<p>Bienvenido al administrador</p>
+			<center><p><h4>Lorem ipsum dolor sit amet</h4></p></center>
 			<form action="<?= $this->UrlBase(); ?>Login/Auth" method="post" autocomplete="off" id="loginForm">
 				<div class="form-group">
 					<label for="usuario">Usuario: </label>
@@ -15,6 +16,7 @@
 				</div>
 				<center><button type="submit" name="boton" class="btn btn-success">Enviar</button></center>
 			</form>
+			</div>
 		</div>
 	</section>
 </div>
