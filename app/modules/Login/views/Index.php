@@ -17,6 +17,15 @@
 				<center><button type="submit" name="boton" class="btn btn-success">Enviar</button></center>
 			</form>
 			</div>
+			<div class="cont3">
+				<center><p>3 Logo</p></center>
+			</div>
+			<div class="cont2">
+				<center><p>2 Imagen lateral</p></center>
+			</div>
+			<div class="cont4">
+				<center><p>4 Imagen superior</p></center>
+			</div>
 		</div>
 	</section>
 </div>

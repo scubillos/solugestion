@@ -11,9 +11,10 @@
   margin-left: auto;
   padding-top: 25px;
   padding-bottom: 25px;
-  padding-right: 25px;
-  padding-left: 25px;
+  padding-right: 0px;
+  padding-left: 0px;
   box-shadow: 5px 5px 10px #ccc;
+  overflow: hidden;
 }
 
 .cont1{
@@ -22,14 +23,58 @@
 	background: #fff;
 	display: block;
 	margin-left: 50%;
-	margin-top: 10%;
+	margin-top: 13%;
 	background: #f2f2f2;
+	padding: 0;
 }
 
 .cont1 p{
 	font-size: 23px;
 	text-align: center;
 }
+
+.cont2{
+	width: 150px;
+	height: 360px;
+	background: #04B5B5; 
+	margin-top: -15.5%;
+  	margin-right: -10;
+  	margin-left: 0;
+  	padding-top: 25px;
+  	padding-bottom: 25px;
+  	padding-right: 0px;
+  	padding-left: 0px;
+  	float: left;
+}
+
+.cont3{
+	width: 300px;
+	height: 113px;
+	background: #ccc; 
+	margin-top: -28%;
+  	margin-right: 0;
+  	margin-left: 0;
+  	padding-top: 25px;
+  	padding-bottom: 25px;
+  	padding-right: 0px;
+  	padding-left: 0px;
+  	float: left;
+}
+
+.cont4{
+	width: 600px;
+	height: 113px;
+	background: #1BC7D7; 
+	margin-top: -28%;
+  	margin-right: 0;
+  	margin-left: 0;
+  	padding-top: 25px;
+  	padding-bottom: 25px;
+  	padding-right: 0px;
+  	padding-left: 0px;
+  	float: right;
+}
+
 
 .container1{
 	font-family: Segoe UI Light;
