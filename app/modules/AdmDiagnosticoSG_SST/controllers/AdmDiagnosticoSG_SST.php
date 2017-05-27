@@ -17,10 +17,10 @@ class AdmDiagnosticoSG_SST Extends Controller{
 		if(!empty($status)){
 			switch($status){
 				case "saved":
-					$this->Toast("Tipo de usuario guardado correctamente");
+					$this->Toast("Parámetro creado correctamente");
 				break;
 				case "updated":
-					$this->Toast("Tipo de usuario actualizado correctamente");
+					$this->Toast("Parámetro actualizado correctamente");
 				break;
 			}
 		}
@@ -54,7 +54,8 @@ class AdmDiagnosticoSG_SST Extends Controller{
 		];
 		
 		//Se obtienen los pasos de los catalogos principales - tipo=0
-		$data["Pasos"] = $this->diagnosticoCatalogos->select(["id","texto"])->where(["estado" => 1,"id_padre"=>0])->toArray();
+		$data["Pasos"] = $this->diagnosticoCatalogos->select(["id","texto"])->where(["estado" => 1,"tipo"=>0])->toArray();
+		$data["estados"] = $this->LoadModel("AdmCatalogos/AdmCatalogos")->select(["valor","texto"])->where(["modulo" => "AdmDiagnosticoSG_SST","tipo" => "Estado"])->toArray();
 		
 		$this->RenderView("Crear",$data);
 	}
@@ -76,9 +77,10 @@ class AdmDiagnosticoSG_SST Extends Controller{
 			]
 		];
 		//Se obtienen los pasos de los catalogos principales - tipo=0
-		$data["Pasos"] = $this->diagnosticoCatalogos->select(["id","texto"])->where(["estado" => 1,"id_padre"=>0])->toArray();
+		$data["Pasos"] = $this->diagnosticoCatalogos->select(["id","texto"])->where(["estado" => 1,"tipo"=>0])->toArray();
+		$data["estados"] = $this->LoadModel("AdmCatalogos/AdmCatalogos")->select(["valor","texto"])->where(["modulo" => "AdmDiagnosticoSG_SST","tipo" => "Estado"])->toArray();
 		
-		$this->RenderView("Crear",$data);
+		$this->RenderView("Editar",$data);
 	}
 	
 	public function Guardar(){
@@ -107,16 +109,37 @@ class AdmDiagnosticoSG_SST Extends Controller{
 		}
 		$id_paso = $_POST["id_paso"];
 		
-		$options = $this->diagnosticoCatalogos->select(["id","texto"])->where("id_padre",$id_paso)->toArray();
-		var_dump($options);
+		$options = $this->diagnosticoCatalogos->select(["id","texto"])->where(["tipo" => '1', "id_padre" => $id_paso, "estado" => 1])->toArray();
+
 		$response = new stdClass();
-		$response->finish = 0;
+		$response->finish = false;
 		if(count($options)!=0){
-			$response->finish = 1;
+			$response->finish = true;
+			$response->options = $options;
+			
+		}
+		
+		echo json_encode($response);
+		die;
+	}
+	
+	public function ajax_buscarSubsecciones(){
+		if(!$this->isAjaxRequest()){
+			return false;
+		}
+		$id_seccion = $_POST["id_seccion"];
+		
+		$options = $this->diagnosticoCatalogos->select(["id","texto"])->where(["tipo" => '2', "id_padre" => $id_seccion, "estado" => 1])->toArray();
+
+		$response = new stdClass();
+		$response->finish = false;
+		if(count($options)!=0){
+			$response->finish = true;
 			$response->options = $options;
 		}
-		echo json_encode($response);
-		exit;
+		
+		echo json_encode($response,true);
+		die;
 	}
 	
 	public function listar(){

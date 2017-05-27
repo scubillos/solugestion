@@ -17,13 +17,15 @@
 		</div>
 		<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 			<label>Sección</label>
-			<select class="form-control" id="paso" name="campo[paso]">
+			<select class="form-control" id="seccion" name="campo[seccion]">
 				<option value="">Seleccione primero un paso</option>
 			</select>
 		</div>
 		<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
-			<label>Subsección</label>					
-			<input type="text" class="form-control" id="subseccion" name="campo[subseccion]" value="<?php echo isset($data["subseccion"]) ? $data["subseccion"] : ""; ?>" />
+			<label>Subsección</label>
+			<select class="form-control" id="subseccion" name="campo[subseccion]">
+				<option value="">Seleccione primero una sección</option>
+			</select>
 		</div>
 	</div>
 	<div class="row col-lg-12 col-md-12">
@@ -37,7 +39,16 @@
 		</div>
 		<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 			<label>Estado</label>					
-			<input type="text" class="form-control" id="estado" name="campo[estado]" value="<?php echo isset($data["estado"]) ? $data["estado"] : ""; ?>" />
+			<select class="form-control" id="estado" name="campo[estado]" >
+				<option value="">Seleccione</option>
+				<?php
+				foreach($estados as $estado => $value){
+				?>
+				<option value="<?php echo $value["valor"] ?>" <?php echo (isset($data["estado"]) AND $data["estado"] == $value["valor"]) ? "selected" : ""; ?> ><?php echo $value["texto"]; ?></option>
+				<?php
+				}
+				?>
+			</select>
 		</div>
 	</div>
 	<div class="row col-lg-12 col-md-12">

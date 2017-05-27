@@ -23,10 +23,13 @@ class Controller{
 	public $template = "";
 	protected $verifySession = true;
 	public $varsJs = "";
+	public $LocalStorage = "";
 	
 	public function __construct(){
 		if(!$this->isAjaxRequest()){
 			$this->FrontEnd();
+			$this->ClassLocalStorage();
+			$this->SetLocalStorage();
 			$this->ClassTemplate();
 		}
 		$this->ClassSession();
@@ -48,6 +51,18 @@ class Controller{
 			$headHTML .= '<link rel="stylesheet" type="text/css" href="'.URL_APP.$routeCSS.'" />';
 		}
 		echo $headHTML;
+	}
+	
+	//Se carga la clase de localStorage
+	public function ClassLocalStorage(){
+		require(SYS_PATH."system/LocalStorage.php");
+		$this->LocalStorage = new LocalStorage;
+	}
+	
+	//Se cargan variables en LocalStorage
+	public function SetLocalStorage(){
+		$this->LocalStorage->setItem("AppCore_Module",CONTROLLER_CALLED);
+		$this->LocalStorage->setItem("AppCore_Action",METHOD_CALLED);
 	}
 	
 	//Se carga la clase de session

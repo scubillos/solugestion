@@ -357,24 +357,33 @@ class Model{
 	// Funcion ToArray para convertir el objeto en un arreglo
 	public function toArray(){
 		
-		
 		if(!isset($this)){
 			throw new \Exception("Error array coversion!!!. Uninitialized query");
 		}
-		if($this->executing == 0){
+		$model = $this;
+		if($model->executing == 0){
 			throw new \Exception("Error array coversion!!!. First run a query");
 		}
-		if($this->executing == 1){
-			$this->get();
+		if($model->executing == 1){
+			$model = $model->get();
 		}
-		if(count($this->rows)==0){
+		if(count($model->rows)==0){
 			return NULL;
 		}
-		if($this->onlyOne == false){
-			return json_decode(json_encode($this->rows), true);
+		
+		if($model->onlyOne == false){
+			$rows =  [];
+			for($idx = 0; $idx < count($model->rows); $idx++){
+				$rows[] = get_object_vars($model->rows[$idx]);
+			}
+			//Se codifica en UTF8 todos los datos
+			for($idx = 0; $idx < count($rows); $idx++){
+				$rows[$idx] = utf8_converter($rows[$idx]);
+			}
 		}else{
-			return json_decode(json_encode($this->rows[0]), true);
+			$rows = get_object_vars($model->rows[0]);
 		}
+		return $rows;
 	}
 	
 	// Insert
@@ -589,6 +598,16 @@ class Model{
 		
 		return $last;
 	}
+}
+
+function utf8_converter($array){
+    array_walk_recursive($array, function(&$item, $key){
+        if(!mb_detect_encoding($item, 'utf-8', true)){
+                $item = utf8_encode($item);
+        }
+    });
+ 
+    return $array;
 }
 
 ?>
