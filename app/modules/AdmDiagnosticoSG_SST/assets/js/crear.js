@@ -28,7 +28,7 @@ $(function() {
 						$(elem.seccion).append(tagOption);
 					});
 				}else{
-					$(elem.seccion).html('<option value="">Seleccione primero un paso</option>');
+					$(elem.seccion).html('<option value="0">Seleccione primero un paso</option>');
 				}
 			}
 		});
@@ -53,10 +53,31 @@ $(function() {
 						$(elem.subseccion).append(tagOption);
 					});
 				}else{
-					$(elem.subseccion).html('<option value="">Seleccione primero una sección</option>');
+					$(elem.subseccion).html('<option value="0">Seleccione primero una sección</option>');
 				}
 			}
 		});
 	});
-
+	
+	var accion = localStorage.getItem("AppCore_Action");
+	if(accion == "Editar"){
+		$(elem.paso).trigger("change");
+		
+		var id_diag = $("#id_diag").val();
+		
+		$.ajax({
+			url: baseUrl() + "AdmDiagnosticoSG_SST/ajax_getInfoEditar",
+			type:"post",
+			async:false,
+			data: { id: id_diag },
+			success:function(response,status){
+				var data = $.parseJSON(response);
+				
+				if(data.finish == true){
+					if(data.seccion !== undefined) $(elem.seccion).val(data.seccion).trigger("change") ;
+					if(data.subseccion !== undefined) $(elem.subseccion).val(data.subseccion);
+				}
+			}
+		});
+	}
 });
