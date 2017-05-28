@@ -53,7 +53,7 @@ class Model{
 	public static function select($data){
 		$model = new static();
 		$model->executing = 1;
-		$model->sqlSelect = [ "fields" => [], "where" => [], "params" => [], "additional" => [ "groupBy" => [], "orderBy" => [], "limit" => 0, "offset" => 0 ] ];
+		$model->sqlSelect = [ "fields" => [], "joins" => [], "where" => [], "params" => [], "additional" => [ "groupBy" => [], "orderBy" => [], "limit" => 0, "offset" => 0 ] ];
 		
 		if(!is_array($data)){
 			$model->sqlSelect["fields"][] = $data;
@@ -71,7 +71,7 @@ class Model{
 		}else{
 			$model = new static();
 			$model->executing = 1;
-			$model->sqlSelect = [ "fields" => [ "*" ], "where" => [], "params" => [], "additional" => [ "groupBy" => [], "orderBy" => [], "limit" => 0, "offset" => 0 ] ];
+			$model->sqlSelect = [ "fields" => [ "*" ], "joins" => [], "where" => [], "params" => [], "additional" => [ "groupBy" => [], "orderBy" => [], "limit" => 0, "offset" => 0 ] ];
 		}
 		
 		$params = $model->sqlSelect["params"];
@@ -97,6 +97,54 @@ class Model{
 			}
 		}
 		$model->sqlSelect["params"] = $params;
+		
+		return $model;
+	}
+	public function join($tableJoin,$field1,$operation,$field2){
+		if(isset($this) AND $this->executing == 1){
+			$model = $this;
+		}else{
+			throw new \Exception("Error join clause!!!. Uninitialized query");
+		}
+		$joins = $model->sqlSelect["joins"];
+		$joins[] = " JOIN ".$tableJoin." ON ".$table1." ".$field1." ".$operation." ".$field2;
+		$model->sqlSelect["joins"] = $joins;
+		
+		return $model;
+	}
+	public function innerJoin($tableJoin,$field1,$operation,$field2){
+		if(isset($this) AND $this->executing == 1){
+			$model = $this;
+		}else{
+			throw new \Exception("Error join clause!!!. Uninitialized query");
+		}
+		$joins = $model->sqlSelect["joins"];
+		$joins[] = " INNER JOIN ".$tableJoin." ON ".$table1." ".$field1." ".$operation." ".$field2;
+		$model->sqlSelect["joins"] = $joins;
+		
+		return $model;
+	}
+	public function leftJoin($tableJoin,$field1,$operation,$field2){
+		if(isset($this) AND $this->executing == 1){
+			$model = $this;
+		}else{
+			throw new \Exception("Error join clause!!!. Uninitialized query");
+		}
+		$joins = $model->sqlSelect["joins"];
+		$joins[] = " LEFT JOIN ".$tableJoin." ON ".$table1." ".$field1." ".$operation." ".$field2;
+		$model->sqlSelect["joins"] = $joins;
+		
+		return $model;
+	}
+	public function rightJoin($tableJoin,$field1,$operation,$field2){
+		if(isset($this) AND $this->executing == 1){
+			$model = $this;
+		}else{
+			throw new \Exception("Error join clause!!!. Uninitialized query");
+		}
+		$joins = $model->sqlSelect["joins"];
+		$joins[] = " RIGHT JOIN ".$tableJoin." ON ".$table1." ".$field1." ".$operation." ".$field2;
+		$model->sqlSelect["joins"] = $joins;
 		
 		return $model;
 	}
@@ -200,9 +248,22 @@ class Model{
 		//Se arma el query base
 		$sql = "SELECT ".$fields." FROM ".$model->table;
 		
+		// joins de tablas
+		if(count($sqlSelect["joins"]) != 0){
+			$joins = "";
+			$countJ = 0;
+			foreach($sqlSelect["joins"] as $field => $value ){
+				if($count != 0){
+					$joins .= $value;
+				}
+				$countJ++;
+			}
+			$sql .= " ".$joins;
+		}
+		
 		// condiciones where
 		if(count($sqlSelect["where"]) != 0){
-			$where = "where ";
+			$where = "WHERE ";
 			$count = 0;
 			foreach($sqlSelect["where"] as $field => $value ){
 				if($count != 0){
@@ -312,6 +373,19 @@ class Model{
 		//Se arma el query base
 		$sql = "SELECT ".$fields." FROM ".$model->table;
 		
+		// joins de tablas
+		if(count($sqlSelect["joins"]) != 0){
+			$joins = "";
+			$countJ = 0;
+			foreach($sqlSelect["joins"] as $field => $value ){
+				if($count != 0){
+					$joins .= $value;
+				}
+				$countJ++;
+			}
+			$sql .= " ".$joins;
+		}
+		
 		// condiciones where
 		if(count($sqlSelect["where"]) != 0){
 			$where = "where ";
@@ -394,6 +468,9 @@ class Model{
 		foreach($data as $field => $value){
 			$fields[] = $field;
 		}
+		for($i=0; $i>count($data); $i++){
+			$data[$i] = utf8_encode($data[$i]);
+		}
 		
 		//created
 		if(!in_array("created",$fields)){
@@ -427,6 +504,10 @@ class Model{
 				if($field == "updated"){
 					$fieldUpdated++;
 				}
+			}
+			
+			for($i=0; $i>count($data); $i++){
+				$data[$i] = utf8_encode($data[$i]);
 			}
 			
 			//updated
@@ -499,10 +580,42 @@ class Model{
 	}
 	
 	// Relaciones
-	// Uno a muchos
-	public function oneMany($tableRelation,$tableField,$relField){
+	// Uno a Uno
+	public function oneOne($tableRelation,$tableField,$relField,$fieldsTable = []){
 		$model = $this;
-		$nameRel = $this->currentRelation;
+		$nameRel = $model->currentRelation;
+		
+		$fields = [];
+		if(count($fieldsTable)!=0){
+			foreach($fieldsTable as $field){
+				$fields[] = $field;
+			}
+		}else{
+			$fields[] = "*";
+		}
+		
+		for($i=0; $i < count($model->rows); $i++){
+			$modelRel = new static();
+			$modelRel->table = $tableRelation;
+			$modelRel->executing = 1;
+			$modelRel->onlyOne = true;
+			$modelRel->sqlSelect = [ "fields" => $fields, "where" => [], "params" => [] ];
+			
+			$row = $model->rows[$i];
+			
+			$valLocal = $row->$relField;
+			$oneManyRes = $modelRel->where($tableField,$valLocal)->getRel()->toArray();
+			if(count($modelRel->rows)!=0){
+				$model->rows[$i]->$nameRel = $oneManyRes;
+			}
+		}
+		
+		return $model;
+	}
+	// Uno a muchos
+	public function oneMany($tableRelation,$tableField,$relField,$fieldsTable = [],$where = []){
+		$model = $this;
+		$nameRel = $model->currentRelation;
 		for($i=0; $i < count($model->rows); $i++){
 			$modelRel = new static();
 			$modelRel->table = $tableRelation;
@@ -512,6 +625,9 @@ class Model{
 			$row = $model->rows[$i];
 			
 			$valLocal = $row->$relField;
+			foreach($where as $wh => $va){
+				$modelRel->where($wh,$va);
+			}
 			$oneManyRes = $modelRel->where($tableField,$valLocal)->getRel()->toArray();
 			if(count($modelRel->rows)!=0){				
 				$model->rows[$i]->$nameRel = $oneManyRes;

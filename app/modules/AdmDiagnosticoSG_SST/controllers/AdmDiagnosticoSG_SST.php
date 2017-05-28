@@ -22,6 +22,9 @@ class AdmDiagnosticoSG_SST Extends Controller{
 				case "updated":
 					$this->Toast("Parámetro actualizado correctamente");
 				break;
+				case "parameterized":
+					$this->Toast("Formulario parametrizado correctamente");
+				break;
 			}
 		}
 		
@@ -36,6 +39,12 @@ class AdmDiagnosticoSG_SST Extends Controller{
 			"opciones" => [
 				"nombre" => "Crear",
 				"url" => $this->UrlBase()."AdmDiagnosticoSG_SST/Crear"
+			],
+			"botones" => [
+				[
+					"nombre" => "Parametrizar",
+					"url" => $this->UrlBase()."AdmDiagnosticoSG_SST/Parametrizar"
+				]
 			]
 		];
 		
@@ -81,6 +90,23 @@ class AdmDiagnosticoSG_SST Extends Controller{
 		$data["estados"] = $this->LoadModel("AdmCatalogos/AdmCatalogos")->select(["valor","texto"])->where(["modulo" => "AdmDiagnosticoSG_SST","tipo" => "Estado"])->toArray();
 		
 		$this->RenderView("Editar",$data);
+	}
+	
+	public function Parametrizar(){
+		$TiposUsuario = $this->LoadModel("TiposUsuario/TiposUsuario")->select(["id","nombre_tipo"])->where(["administrador" => 0, "estado" => 1])->toArray();
+		$this->AddJS('modules/AdmDiagnosticoSG_SST/assets/js/parametrizar.js');
+		
+		$data["TiposUsuario"] = $TiposUsuario;
+		$data["breadcrumb"] = [
+			"titulo" => "Editar parámetro",
+			"ruta" => [
+				[ "nombre" => "Administrar" ],
+				[ "nombre" => "Diagnóstico SG-SST", "url" => $this->UrlBase()."AdmDiagnosticoSG_SST" ],
+				[ "nombre" => "Parametrizar" ]
+			]
+		];
+		
+		$this->RenderView("Parametrizar",$data);
 	}
 	
 	public function Guardar(){
@@ -142,13 +168,83 @@ class AdmDiagnosticoSG_SST Extends Controller{
 		die;
 	}
 	
+	public function ajax_getInfoEditar(){
+		if(!$this->isAjaxRequest()){
+			return false;
+		}
+		$id = $_POST["id"];
+		
+		$options = $this->admDiagnostico->find($id)->toArray();
+
+		$response = new stdClass();
+		$response->finish = false;
+		if(count($options)!=0){
+			$response->finish = true;
+			$response->seccion = $options["seccion"];
+			$response->subseccion = $options["subseccion"];
+		}
+		
+		echo json_encode($response,true);
+		die;
+	}
+	
+	public function ajax_getParametrizacionTipo(){
+		if(!$this->isAjaxRequest()){
+			return false;
+		}
+		$tipoUsuario = $_POST["tipoUsuario"];
+		$Parametros = $this->diagnosticoCatalogos->select("*")->where(["tipo" => 0, "estado" => 1])->relations(["secciones"])->toArray();
+		
+		for($i=0; $i < count($Parametros); $i++){
+			$Parametro = $Parametros[$i];
+			
+			if(isset($Parametro["secciones"]) AND count($Parametro["secciones"]) != 0){
+				$j = 0;
+				foreach($Parametro["secciones"] as $k => $seccion){
+					$id_seccion = $seccion["id"];
+					$Subsecciones = $this->diagnosticoCatalogos->select(["id","texto"])->where(["id_padre" => $id_seccion,"tipo" => 2, "estado" => 1])->relations(["parametros"])->toArray();
+					
+					$Parametros[$i]["secciones"][$j]["subsecciones"] = $Subsecciones;
+					$j++;
+				}				
+			}
+		}
+		$FormTipoUsuario = $this->LoadModel("DiagForms")->select("id_parametro")->where("id_tipo_usuario",$tipoUsuario)->toArray();
+		$ParametrosTipoUsuario = [];
+		if($FormTipoUsuario != NULL){
+			foreach($FormTipoUsuario as $k => $value){
+				$ParametrosTipoUsuario[] = $value["id_parametro"];
+			}
+		}
+		
+		$data["Parametros"] = $Parametros;
+		$data["ParametrosTipoUsuario"] = $ParametrosTipoUsuario;
+	
+		$this->RenderView("TablaParametrizacion",$data);
+	}
+	
+	public function GuardarParametrizacion(){
+		if($_POST){
+			$id_tipo_usuario = $_POST["id_tipo_usuario"];
+			$parametros = $_POST["parametros"];
+			$DiagForms = $this->LoadModel("DiagForms");
+			$DiagForms->delete("id_tipo_usuario",$id_tipo_usuario);
+			foreach($parametros as $id_parametro){
+				$campos = [];
+				$campos["id_tipo_usuario"] = $id_tipo_usuario;
+				$campos["id_parametro"] = $id_parametro;
+				$DiagForms->insert($campos);
+			}
+			$this->redirect("AdmDiagnosticoSG_SST/Index/parameterized");
+		}
+	}
+	
 	public function listar(){
 		if(!$this->isAjaxRequest()){
 			return false;
 		}
 		
-		$admDiagnostico = $this->admDiagnostico->select("*")->toArray();
-		
+		$admDiagnostico = $this->admDiagnostico->select("*")->relations(["nPaso","nSeccion","nSubseccion"])->toArray();
 		$response = new stdClass();
         $response->page     = $_POST["page"];
         $response->total    = ceil( count($admDiagnostico)/$_POST["rows"] );
@@ -177,6 +273,9 @@ class AdmDiagnosticoSG_SST Extends Controller{
 				
                 $response->rows[$i]["id"] = $row['id'];
                 $response->rows[$i]["cell"] = array(
+                    $row['nPaso']["texto"],
+                    $row['nSeccion']["texto"],
+                    $row['nSubseccion']["texto"],
                     $row['numeral'],
                     $row['marco_legal'],
                     $criterio,

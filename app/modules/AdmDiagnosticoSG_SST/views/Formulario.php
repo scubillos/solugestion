@@ -1,6 +1,6 @@
 <div class="content1">
 <form action="<?php echo $this->UrlBase(); ?>AdmDiagnosticoSG_SST/Guardar" method="post">
-	<input type="hidden" name="campo[id]" value="<?php echo isset($data["id"]) ? $data["id"] : ""; ?>" />
+	<input type="hidden" name="campo[id]" id="id_diag" value="<?php echo isset($data["id"]) ? $data["id"] : ""; ?>" />
 	<div class="row col-lg-12 col-md-12">
 		<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 			<label>Paso</label>
@@ -9,7 +9,7 @@
 				<?php
 				foreach($Pasos as $key => $paso){
 				?>
-				<option value="<?php echo $paso["id"] ?>" <?php echo (isset($data["paso"]) AND $data["paso"]==$paso["id"]) ? $data["paso"] : ""; ?>><?php echo $paso["texto"] ?></option>
+				<option value="<?php echo $paso["id"] ?>" <?php echo (isset($data["paso"]) AND $data["paso"]==$paso["id"]) ? "selected" : ""; ?>><?php echo $paso["texto"] ?></option>
 				<?php
 				}
 				?>
@@ -18,13 +18,13 @@
 		<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 			<label>Sección</label>
 			<select class="form-control" id="seccion" name="campo[seccion]">
-				<option value="">Seleccione primero un paso</option>
+				<option value="0">Seleccione primero un paso</option>
 			</select>
 		</div>
 		<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 			<label>Subsección</label>
 			<select class="form-control" id="subseccion" name="campo[subseccion]">
-				<option value="">Seleccione primero una sección</option>
+				<option value="0">Seleccione primero una sección</option>
 			</select>
 		</div>
 	</div>

@@ -15,9 +15,12 @@ $(document).ready(function () {
 		mtype: "post",
 		styleUI : 'Bootstrap',
 		datatype: "json",
-		colNames: ["Numeral","Marco legal","Criterio","Modo de verificación","",""],
+		colNames: ["Paso","Seccion","Subseccion","Numeral","Marco legal","Criterio","Modo de verificación","",""],
 		colModel: [
-			{ name: 'numeral', width: 75 },
+			{ name: 'paso', width: 40 },
+			{ name: 'seccion', width: 75 },
+			{ name: 'subseccion', width: 75 },
+			{ name: 'numeral', width: 40 },
 			{ name: 'marco_legal', width: 75 },
 			{ name: 'criterio', width: 75 },
 			{ name: 'modo_verificacion', width: 75 },
@@ -25,7 +28,7 @@ $(document).ready(function () {
 			{ name: 'link', width: 150, hidden:true }
 		],
 		height: "auto",
-		width: $(elem.idTable).parent().width() - 50,
+		width: $(elem.idTable).parent().width() - 100,
 		rowList: [10, 20,50, 100],
 		rowNum: 10,
 		page: 1,
