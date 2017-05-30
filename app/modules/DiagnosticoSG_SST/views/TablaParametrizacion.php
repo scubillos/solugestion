@@ -43,6 +43,14 @@
 							$Parametro = $Subseccion["parametros"][$m];
 							if(in_array($Parametro["id"],$ParametrosTipoUsuario)){
 
+								$checked = "";
+								if(isset($detalle)){
+									for($i=0;$i<count($detalle);$i++){
+										if($detalle[$i]["id_parametro"]==$Parametro["id"]){
+											$checked = $detalle[$i]["respuesta"];
+										}
+									}
+								}
 							
 						?>
 						<tr>
@@ -50,10 +58,10 @@
 							<td><?php echo $Parametro["marco_legal"]; ?></td>
 							<td><?php echo $Parametro["criterio"]; ?></td>
 							<td><?php echo $Parametro["modo_verificacion"]; ?></td>
-							<td><input type="radio" class="form-control" name="respuestas[<?php echo $Parametro["id"]; ?>]" value="1"/></td>
-							<td><input type="radio" class="form-control" name="respuestas[<?php echo $Parametro["id"]; ?>]" value="2"/></td>
-							<td><input type="radio" class="form-control" name="respuestas[<?php echo $Parametro["id"]; ?>]" value="3"/></td>
-							<td><input type="radio" class="form-control" name="respuestas[<?php echo $Parametro["id"]; ?>]" value="4"/></td>
+							<td><input type="radio" class="form-control" name="respuestas[<?php echo $Parametro["id"]; ?>]" value="1" <?php echo ($checked==1) ? "checked":""; ?>/></td>
+							<td><input type="radio" class="form-control" name="respuestas[<?php echo $Parametro["id"]; ?>]" value="2" <?php echo ($checked==2) ? "checked":""; ?>/></td>
+							<td><input type="radio" class="form-control" name="respuestas[<?php echo $Parametro["id"]; ?>]" value="3" <?php echo ($checked==3) ? "checked":""; ?>/></td>
+							<td><input type="radio" class="form-control" name="respuestas[<?php echo $Parametro["id"]; ?>]" value="4" <?php echo ($checked==4) ? "checked":""; ?>/></td>
 						</tr>
 						<?php
 						}

@@ -27,7 +27,8 @@
 			
 			<div class="row">
 				<?php 
-					$this->getParametrizacionTipo();
+					$id_diag = isset($data["id"]) ? $data["id"] : "";
+					$this->getParametrizacionTipo($id_diag);
 				 ?>
 			</div>
 			

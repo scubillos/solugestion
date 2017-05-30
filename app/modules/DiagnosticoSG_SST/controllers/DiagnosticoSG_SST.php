@@ -64,7 +64,7 @@ class DiagnosticoSG_SST Extends Controller{
 		}
 		$this->AddJS('modules/DiagnosticoSG_SST/assets/js/crear.js');
 		$Diagnostico = $this->Diagnostico->findByIdx($idx)->toArray();
-		
+
 		$data["data"] = $Diagnostico;
 		$data["breadcrumb"] = [
 			"titulo" => "Editar diagnostico",
@@ -73,6 +73,7 @@ class DiagnosticoSG_SST Extends Controller{
 				[ "nombre" => "Editar" ]
 			]
 		];
+
 		
 		$data['estados_diag'] = $this->LoadModel("AdmCatalogos/AdmCatalogos")->select(array('valor','texto'))->where(array('modulo' => 'DiagnosticoSG_SST','tipo' => 'Estado'))->toArray();
 
@@ -87,7 +88,7 @@ class DiagnosticoSG_SST Extends Controller{
 				//Guardar registro nuevo
 				unset($campos["id"]);
 				$Diagnostico = $this->Diagnostico->insert($campos);
-				var_dump($Diagnostico);
+	
 				foreach ($respuestas as $id_parametro => $respuesta){
 					$detalle = array(
 						"id_diagnostico" => $Diagnostico->id,
@@ -103,6 +104,18 @@ class DiagnosticoSG_SST Extends Controller{
 				unset($campos["id"]);
 				
 				$Diagnostico->update($campos);
+
+				//delete from diag_diagnostico_detalles where id_diagnostico = $Diagnostico->id
+				$this->Diagdetalle->delete("id_diagnostico",$Diagnostico->id);
+
+				foreach ($respuestas as $id_parametro => $respuesta){
+					$detalle = array(
+						"id_diagnostico" => $Diagnostico->id,
+						"id_parametro" => $id_parametro,
+						"respuesta" => $respuesta
+						);
+					$guardarres = $this->Diagdetalle->insert($detalle);
+				}
 				
 				$this->redirect("DiagnosticoSG_SST/Index/updated");
 			}
@@ -147,7 +160,7 @@ class DiagnosticoSG_SST Extends Controller{
 	}
 
 
-	public function getParametrizacionTipo(){
+	public function getParametrizacionTipo($id_diag){
 		
 		$tipoUsuario = $this->session->varSession_get("tipo_usuario");
 		$Parametros = $this->diagnosticoCatalogos->select("*")->where(["tipo" => 0, "estado" => 1])->relations(["secciones"])->toArray();
@@ -174,6 +187,11 @@ class DiagnosticoSG_SST Extends Controller{
 			}
 		}
 		
+		if($id_diag!=""){
+			$Detalle = $this->Diagdetalle->select(array("id_parametro", "respuesta"))->where("id_diagnostico",$id_diag)->toArray();
+
+			$data["detalle"] = $Detalle;
+		}
 		$data["Parametros"] = $Parametros;
 		$data["ParametrosTipoUsuario"] = $ParametrosTipoUsuario;
 	
