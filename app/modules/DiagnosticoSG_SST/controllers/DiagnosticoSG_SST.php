@@ -128,7 +128,7 @@ class DiagnosticoSG_SST Extends Controller{
 			return false;
 		}
 		
-		$Diagnostico = $this->Diagnostico->select("*")->toArray();
+		$Diagnostico = $this->Diagnostico->select(array("diag_diagnostico.*","gen_catalogos.texto as estadotexto"))->innerJoin("gen_catalogos","gen_catalogos.valor","=","diag_diagnostico.estado")->where(array("gen_catalogos.modulo" => "DiagnosticoSG_SST","gen_catalogos.tipo" => "Estado"))->toArray();
 		
 		$response = new stdClass();
         $response->page     = $_POST["page"];
@@ -147,7 +147,7 @@ class DiagnosticoSG_SST Extends Controller{
                 $response->rows[$i]["id"] = $row['id'];
                 $response->rows[$i]["cell"] = array(
                     $row['fecha_diagnostico'],
-                    $row['estado'],
+                    $row['estadotexto'],
                     $row['observaciones_diagnostico'],
                     $link_option,
                     $hidden_options
