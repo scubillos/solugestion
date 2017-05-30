@@ -25,6 +25,11 @@
 				</div>
 			</div>
 			
+			<div class="row">
+				<?php 
+					$this->getParametrizacionTipo();
+				 ?>
+			</div>
 			
 			<div class="row col-lg-12 col-md-12">
 			<div class="row">
