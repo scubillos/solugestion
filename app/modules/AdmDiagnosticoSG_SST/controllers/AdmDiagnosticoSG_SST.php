@@ -247,14 +247,29 @@ class AdmDiagnosticoSG_SST Extends Controller{
 			return false;
 		}
 		
+		$clause = [];
+		if(isset($_POST["campos"])){
+			$campos = $_POST["campos"];
+			if(!empty($campos["paso"])) $clause["diag1.texto"] = [ "like" => "%".$campos["paso"]."%" ];
+			if(!empty($campos["seccion"])) $clause["diag2.texto"] = [ "like" => "%".$campos["seccion"]."%" ];
+			if(!empty($campos["subseccion"])) $clause["diag3.texto"] = [ "like" => "%".$campos["subseccion"]."%" ];
+			if(!empty($campos["numeral"])) $clause["numeral"] = [ "like" => "%".$campos["numeral"]."%" ];
+			if(!empty($campos["marco_legal"])) $clause["marco_legal"] = [ "like" => "%".$campos["marco_legal"]."%" ];
+		}
+		
 		//$admDiagnostico = $this->admDiagnostico->select("*")->relations(["nPaso","nSeccion","nSubseccion"])->toArray();
-		$admDiagnostico = $this->admDiagnostico->select("*")->relations(["nPaso","nSeccion","nSubseccion"])->toArray();
+		$admDiagnostico = $this->admDiagnostico->select(["diag_parametros.*","diag1.texto AS paso_texto","diag2.texto AS seccion_texto","diag3.texto AS subseccion_texto"]);
+		if(count($clause)!=0){
+			$admDiagnostico = $admDiagnostico->where($clause);
+		}
+		$admDiagnostico = $admDiagnostico->innerJoin("diag_catalogos AS diag1","diag1.id","=","diag_parametros.paso")->innerJoin("diag_catalogos AS diag2","diag2.id","=","diag_parametros.seccion")->innerJoin("diag_catalogos AS diag3","diag3.id","=","diag_parametros.subseccion")->toArray();
+		
 		$response = new stdClass();
         $response->page     = $_POST["page"];
         $response->total    = ceil( count($admDiagnostico)/$_POST["rows"] );
         $response->records  = count($admDiagnostico);
-        $i=0;
-
+		
+		$i=0;
         if(count($admDiagnostico) != 0){
             foreach ($admDiagnostico AS $i => $row){
 				
@@ -277,9 +292,9 @@ class AdmDiagnosticoSG_SST Extends Controller{
 				
                 $response->rows[$i]["id"] = $row['id'];
                 $response->rows[$i]["cell"] = array(
-                    $row['nPaso']["texto"],
-                    $row['nSeccion']["texto"],
-                    $row['nSubseccion']["texto"],
+                    $row['paso_texto'],
+                    $row['seccion_texto'],
+                    $row['subseccion_texto'],
                     $row['numeral'],
                     $row['marco_legal'],
                     $criterio,
