@@ -4,6 +4,7 @@ $(document).ready(function () {
 		idTable: "#TablaAdmParamDiagnostico",
 		pagerTable: "#TablaAdmParamDiagnosticoPager",
 		buscar: "#searchBtn",
+		limpiar: "#clearBtn",
 		botonOpciones: ".viewOptions",
 		modalOpciones: "#ModalOpciones",
 		botonEditar: "#btnEditar",
@@ -89,7 +90,30 @@ $(document).ready(function () {
 			marco_legal: $("#search_marco_legal").val()
 		};
 		
-		console.log("search ",campos);
+		$(elem.idTable).setGridParam({
+			url: tablaUrl,
+			datatype: "json",
+			postData: {
+				campos:campos
+			}
+		}).trigger('reloadGrid');
+	});
+	
+	//Limpiar
+	$(elem.limpiar).click(function(){
+		var campos = {
+			paso: '',
+			seccion: '',
+			subseccion: '',
+			numeral: '',
+			marco_legal: ''
+		};
+		
+		$("#search_paso").val("");
+		$("#search_seccion").val("");
+		$("#search_subseccion").val("");
+		$("#search_numeral").val("");
+		$("#search_marco_legal").val("");
 		
 		$(elem.idTable).setGridParam({
 			url: tablaUrl,
