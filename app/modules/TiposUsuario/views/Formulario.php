@@ -1,5 +1,5 @@
 <div class="content1">
-<form action="<?php echo $this->UrlBase(); ?>TiposUsuario/Guardar" method="post">
+<form action="<?php echo $this->UrlBase(); ?>TiposUsuario/Guardar" method="post" id="CrearForm">
 	<input type="hidden" name="campo[id_tipo]" value="<?php echo isset($data["id"]) ? $data["id"] : ""; ?>" />
 	<div class="row col-lg-12 col-md-12">
 		<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">

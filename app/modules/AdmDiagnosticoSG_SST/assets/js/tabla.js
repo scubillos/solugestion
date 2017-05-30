@@ -3,15 +3,17 @@ $(document).ready(function () {
 	var elem = {
 		idTable: "#TablaAdmParamDiagnostico",
 		pagerTable: "#TablaAdmParamDiagnosticoPager",
+		buscar: "#searchBtn",
 		botonOpciones: ".viewOptions",
 		modalOpciones: "#ModalOpciones",
 		botonEditar: "#btnEditar",
-		botonEliminar: "#btnEliminar"
+		botonEliminar: "#btnEliminar",
 	};
+	var tablaUrl = baseUrl() + 'AdmDiagnosticoSG_SST/listar';
 	
 	//jqGrid
 	$(elem.idTable).jqGrid({
-		url: baseUrl() + 'AdmDiagnosticoSG_SST/listar',
+		url: tablaUrl,
 		mtype: "post",
 		styleUI : 'Bootstrap',
 		datatype: "json",
@@ -75,5 +77,24 @@ $(document).ready(function () {
 				}
 			}
 		});
+	});
+	
+	//Buscar
+	$(elem.buscar).click(function(){
+		var campos = {
+			paso: $("#search[paso]").val(),
+			seccion: $("#search[seccion]").val(),
+			subseccion: $("#search[subseccion]").val(),
+			numeral: $("#search[numeral]").val(),
+			marco_legal: $("#search[marco_legal]").val()
+		};
+		
+		$(elem.idTable).setGridParam({
+			url: tablaUrl,
+			datatype: "json",
+			postData: {
+				campos:campos
+			}
+		}).trigger('reloadGrid');
 	});
 });

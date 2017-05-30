@@ -326,16 +326,25 @@ class Model{
 			}
 		}else if(is_array($result)){
 			$k = 0;
-			foreach($result as $row){
-				foreach($row as $key => $value){
-					if(in_array($key,$model->fields) AND $key!="0"){
-						if(!isset($model->rows[$k]) OR !is_object($model->rows[$k])){
-							$model->rows[$k] = (object)[];
-						}
-						$model->rows[$k]->$key = $value;
+			if(count($result)==1){
+				foreach($result as $key => $value){
+					if(in_array($key,$model->fields)){
+						$model->$key = $value;
+						$model->rows[0]->$key = $value;
 					}
 				}
-				$k++;
+			}else{
+				foreach($result as $row){
+					foreach($row as $key => $value){
+						if(in_array($key,$model->fields) AND $key!="0"){
+							if(!isset($model->rows[$k]) OR !is_object($model->rows[$k])){
+								$model->rows[$k] = (object)[];
+							}
+							$model->rows[$k]->$key = $value;
+						}
+					}
+					$k++;
+				}
 			}
 		}
 		

@@ -38,19 +38,40 @@
 				
 					<div class="collapse panelFiltros" id="panelFiltros" aria-labelledby="btnExpand">
 						<!-- Inicia campos de Busqueda -->
-						<form method="POST" id="formBuscarTipos" autocomplete="off" accept-charset="utf-8">
+						<form method="POST" id="formBuscarTipos" autocomplete="off" >
 						<div class="row">
 							<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
-								<label for="">Nombre de tipo</label>
-								<input type="text" id="nombre_tipo" class="form-control">
+								<label>Paso</label>
+								<select id="search[paso]" class="form-control">
+									<option value="">Seleccione</option>
+									<?php
+									foreach($Pasos as $key => $paso){
+									?>
+									<option value="<?php echo $paso["id"] ?>"><?php echo $paso["texto"] ?></option>
+									<?php
+									}
+									?>
+								</select>
 							</div>
 							<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
-								<label for="">Estado</label>
-								<select class="form-control" id="estado">
-									<option value="">Seleccione</option>
-									<option value="1">Activo</option>
-									<option value="0">Inactivo</option>
+								<label>Sección</label>
+								<select class="form-control" id="search[seccion]">
+									<option value="">Seleccione primero un paso</option>
 								</select>
+							</div>
+							<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
+								<label>Subsección</label>
+								<select class="form-control" id="search[subseccion]">
+									<option value="">Seleccione primero una sección</option>
+								</select>
+							</div>
+							<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
+								<label>Numeral</label>
+								<input class="form-control" id="search[numeral]" />
+							</div>
+							<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
+								<label>Marco Legal</label>
+								<input class="form-control" id="search[marco_legal]" />
 							</div>
 							</hr>
 						</div>

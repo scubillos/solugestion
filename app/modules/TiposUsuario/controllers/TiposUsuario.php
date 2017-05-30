@@ -42,6 +42,8 @@ class TiposUsuario Extends Controller{
 	}
 	
 	public function Crear(){
+		$this->AddJS('modules/TiposUsuario/assets/js/formulario.js');
+		
 		$data["breadcrumb"] = [
 			"titulo" => "Crear tipo de usuario",
 			"ruta" => [
@@ -87,6 +89,8 @@ class TiposUsuario Extends Controller{
 		if($idx == ""){
 			return false;
 		}
+		$this->AddJS('modules/TiposUsuario/assets/js/formulario.js');
+		
 		$tipoUsuario = $this->tiposUsuario->findByIdx($idx)->toArray();
 		
 		$data["data"] = $tipoUsuario;
