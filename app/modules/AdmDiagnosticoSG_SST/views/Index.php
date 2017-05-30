@@ -42,36 +42,23 @@
 						<div class="row">
 							<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 								<label>Paso</label>
-								<select id="search[paso]" class="form-control">
-									<option value="">Seleccione</option>
-									<?php
-									foreach($Pasos as $key => $paso){
-									?>
-									<option value="<?php echo $paso["id"] ?>"><?php echo $paso["texto"] ?></option>
-									<?php
-									}
-									?>
-								</select>
+								<input type="text" id="search_paso" class="form-control" />
 							</div>
 							<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 								<label>Sección</label>
-								<select class="form-control" id="search[seccion]">
-									<option value="">Seleccione primero un paso</option>
-								</select>
+								<input type="text" id="search_seccion" class="form-control" />
 							</div>
 							<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 								<label>Subsección</label>
-								<select class="form-control" id="search[subseccion]">
-									<option value="">Seleccione primero una sección</option>
-								</select>
+								<input type="text" id="search_subseccion" class="form-control" />
 							</div>
 							<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 								<label>Numeral</label>
-								<input class="form-control" id="search[numeral]" />
+								<input class="form-control" id="search_numeral" />
 							</div>
 							<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 								<label>Marco Legal</label>
-								<input class="form-control" id="search[marco_legal]" />
+								<input class="form-control" id="search_marco_legal" />
 							</div>
 							</hr>
 						</div>

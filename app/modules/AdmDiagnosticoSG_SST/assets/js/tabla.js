@@ -82,12 +82,14 @@ $(document).ready(function () {
 	//Buscar
 	$(elem.buscar).click(function(){
 		var campos = {
-			paso: $("#search[paso]").val(),
-			seccion: $("#search[seccion]").val(),
-			subseccion: $("#search[subseccion]").val(),
-			numeral: $("#search[numeral]").val(),
-			marco_legal: $("#search[marco_legal]").val()
+			paso: $("#search_paso").val(),
+			seccion: $("#search_seccion").val(),
+			subseccion: $("#search_subseccion").val(),
+			numeral: $("#search_numeral").val(),
+			marco_legal: $("#search_marco_legal").val()
 		};
+		
+		console.log("search ",campos);
 		
 		$(elem.idTable).setGridParam({
 			url: tablaUrl,

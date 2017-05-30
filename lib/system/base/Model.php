@@ -107,7 +107,7 @@ class Model{
 			throw new \Exception("Error join clause!!!. Uninitialized query");
 		}
 		$joins = $model->sqlSelect["joins"];
-		$joins[] = " JOIN ".$tableJoin." ON ".$table1." ".$field1." ".$operation." ".$field2;
+		$joins[] = " JOIN ".$tableJoin." ON ".$field1." ".$operation." ".$field2;
 		$model->sqlSelect["joins"] = $joins;
 		
 		return $model;
@@ -119,7 +119,7 @@ class Model{
 			throw new \Exception("Error join clause!!!. Uninitialized query");
 		}
 		$joins = $model->sqlSelect["joins"];
-		$joins[] = " INNER JOIN ".$tableJoin." ON ".$table1." ".$field1." ".$operation." ".$field2;
+		$joins[] = " INNER JOIN ".$tableJoin." ON ".$field1." ".$operation." ".$field2;
 		$model->sqlSelect["joins"] = $joins;
 		
 		return $model;
@@ -131,7 +131,7 @@ class Model{
 			throw new \Exception("Error join clause!!!. Uninitialized query");
 		}
 		$joins = $model->sqlSelect["joins"];
-		$joins[] = " LEFT JOIN ".$tableJoin." ON ".$table1." ".$field1." ".$operation." ".$field2;
+		$joins[] = " LEFT JOIN ".$tableJoin." ON ".$field1." ".$operation." ".$field2;
 		$model->sqlSelect["joins"] = $joins;
 		
 		return $model;
@@ -143,7 +143,7 @@ class Model{
 			throw new \Exception("Error join clause!!!. Uninitialized query");
 		}
 		$joins = $model->sqlSelect["joins"];
-		$joins[] = " RIGHT JOIN ".$tableJoin." ON ".$table1." ".$field1." ".$operation." ".$field2;
+		$joins[] = " RIGHT JOIN ".$tableJoin." ON ".$field1." ".$operation." ".$field2;
 		$model->sqlSelect["joins"] = $joins;
 		
 		return $model;
@@ -253,9 +253,7 @@ class Model{
 			$joins = "";
 			$countJ = 0;
 			foreach($sqlSelect["joins"] as $field => $value ){
-				if($count != 0){
-					$joins .= $value;
-				}
+				$joins .= $value;
 				$countJ++;
 			}
 			$sql .= " ".$joins;
@@ -329,7 +327,8 @@ class Model{
 				$model->rows[0] = (object)[];
 				$row = $result[0];
 				foreach($row as $key => $value){
-				if(in_array($key,$model->fields)){
+				//if(in_array($key,$model->fields)){
+				if(!is_numeric($key)){
 						$model->$key = $value;
 						$model->rows[0]->$key = $value;
 					}
@@ -338,7 +337,8 @@ class Model{
 				$k = 0;
 				foreach($result as $row){
 					foreach($row as $key => $value){
-						if(in_array($key,$model->fields) AND $key!="0"){
+						//if(in_array($key,$model->fields) AND $key!="0"){
+						if(!is_numeric($key)){
 							if(!isset($model->rows[$k]) OR !is_object($model->rows[$k])){
 								$model->rows[$k] = (object)[];
 							}
@@ -389,9 +389,7 @@ class Model{
 			$joins = "";
 			$countJ = 0;
 			foreach($sqlSelect["joins"] as $field => $value ){
-				if($count != 0){
-					$joins .= $value;
-				}
+				$joins .= $value;
 				$countJ++;
 			}
 			$sql .= " ".$joins;
