@@ -79,8 +79,8 @@ class Model{
 			$data = $fieldC;
 			foreach($data as $field => $value){
 				if(is_array($value)){
-					$model->sqlSelect["where"][$field] = " ".$value[0]." :".$field." ";
-					$params[":".$field] = $value[1];
+					$model->sqlSelect["where"][$field] = " ".$value[0]." :".str_replace(".","",$field)." ";
+					$params[":".str_replace(".","",$field)] = $value[1];
 				}else{
 					$model->sqlSelect["where"][$field] = " = :".$field." ";
 					$params[":".$field] = $value;

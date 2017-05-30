@@ -250,11 +250,11 @@ class AdmDiagnosticoSG_SST Extends Controller{
 		$clause = [];
 		if(isset($_POST["campos"])){
 			$campos = $_POST["campos"];
-			if(!empty($campos["paso"])) $clause["diag1.texto"] = [ "like" => "%".$campos["paso"]."%" ];
-			if(!empty($campos["seccion"])) $clause["diag2.texto"] = [ "like" => "%".$campos["seccion"]."%" ];
-			if(!empty($campos["subseccion"])) $clause["diag3.texto"] = [ "like" => "%".$campos["subseccion"]."%" ];
-			if(!empty($campos["numeral"])) $clause["numeral"] = [ "like" => "%".$campos["numeral"]."%" ];
-			if(!empty($campos["marco_legal"])) $clause["marco_legal"] = [ "like" => "%".$campos["marco_legal"]."%" ];
+			if(!empty($campos["paso"])) $clause["diag1.texto"] = [ "like","%".$campos["paso"]."%" ];
+			if(!empty($campos["seccion"])) $clause["diag2.texto"] = [ "like" ,"%".$campos["seccion"]."%" ];
+			if(!empty($campos["subseccion"])) $clause["diag3.texto"] = [ "like" ,"%".$campos["subseccion"]."%" ];
+			if(!empty($campos["numeral"])) $clause["numeral"] = [ "like" ,"%".$campos["numeral"]."%" ];
+			if(!empty($campos["marco_legal"])) $clause["marco_legal"] = [ "like","%".$campos["marco_legal"]."%" ];
 		}
 		
 		//$admDiagnostico = $this->admDiagnostico->select("*")->relations(["nPaso","nSeccion","nSubseccion"])->toArray();
