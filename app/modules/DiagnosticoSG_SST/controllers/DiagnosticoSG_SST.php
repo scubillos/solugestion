@@ -90,7 +90,7 @@ class DiagnosticoSG_SST Extends Controller{
 				var_dump($Diagnostico);
 				foreach ($respuestas as $id_parametro => $respuesta){
 					$detalle = array(
-						"id_diagnostico" => $Diagnostico->rows[0]->id,
+						"id_diagnostico" => $Diagnostico->id,
 						"id_parametro" => $id_parametro,
 						"respuesta" => $respuesta
 						);
