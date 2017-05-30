@@ -28,12 +28,13 @@ class Login Extends Controller{
 			$users = $this->LoadModel("Usuarios/Usuarios");
 			$users = $users->where(["correo" => $email, "pass" => $pass ])->toArray();
 			if(count($users)==1){
-				$idhex = dechex($users[0]["id"]);
+				$idhex = $users[0]["id"];
 				$nombreus = $users[0]["nombre"];
 				$tipo_usuario = $users[0]["tipo_usuario"];
 				
 				$this->session->varSession_set("idhex",$idhex);
 				$this->session->varSession_set("nombre",$nombreus);
+				$this->session->varSession_set("tipo_usuario",$tipo_usuario);
 				$this->session->varSession_set("tipo_usuario",$tipo_usuario);
 				$this->session->varSession_set("url_app",URL_APP);
 				

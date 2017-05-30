@@ -82,18 +82,18 @@ class Model{
 					$model->sqlSelect["where"][$field] = " ".$value[0]." :".str_replace(".","",$field)." ";
 					$params[":".str_replace(".","",$field)] = $value[1];
 				}else{
-					$model->sqlSelect["where"][$field] = " = :".$field." ";
-					$params[":".$field] = $value;
+					$model->sqlSelect["where"][$field] = " = :".str_replace(".","",$field)." ";
+					$params[":".str_replace(".","",$field)] = $value;
 				}
 			}
 		}else{
 			// solo se iguala
 			if($val == ""){
-				$model->sqlSelect["where"][$fieldC] = " = :".$fieldC." ";
-				$params[":".$fieldC] = $operation;
+				$model->sqlSelect["where"][$fieldC] = " = :".str_replace(".","",$fieldC)." ";
+				$params[":".str_replace(".","",$fieldC)] = $operation;
 			}else{
-				$model->sqlSelect["where"][$fieldC] = " ".$operation." :".$fieldC." ";
-				$params[":".$fieldC] = $val;
+				$model->sqlSelect["where"][$fieldC] = " ".$operation." :".str_replace(".","",$fieldC)." ";
+				$params[":".str_replace(".","",$fieldC)] = $val;
 			}
 		}
 		$model->sqlSelect["params"] = $params;
