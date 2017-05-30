@@ -1,6 +1,7 @@
 <div class="content1"> 
 		<form action="<?php echo $this->UrlBase(); ?>DiagnosticoSG_SST/Guardar" method="post" id="CrearFormdiag">
 			<input type="hidden" name="campo[id]" value="<?php echo isset($data["id"]) ? $data["id"] : ""; ?>">
+			<input type="hidden" name="campo[id_usuario]" value="<?php echo $this->session->varSession_get("idhex"); ?>">
 			<div class="row col-lg-12 col-md-12">
 				<div class="form-group col-xs-12 col-sm-6 col-md-3 col-lg-3">
 					<label>Fecha de diagnostico</label>
