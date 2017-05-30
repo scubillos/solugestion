@@ -325,15 +325,17 @@ class Model{
 				}
 			}
 		}else if(is_array($result)){
-			$k = 0;
-			if(count($result)==1){
-				foreach($result as $key => $value){
-					if(in_array($key,$model->fields)){
+			if(count($result) == 1){
+				$model->rows[0] = (object)[];
+				$row = $result[0];
+				foreach($row as $key => $value){
+				if(in_array($key,$model->fields)){
 						$model->$key = $value;
 						$model->rows[0]->$key = $value;
 					}
 				}
 			}else{
+				$k = 0;
 				foreach($result as $row){
 					foreach($row as $key => $value){
 						if(in_array($key,$model->fields) AND $key!="0"){
