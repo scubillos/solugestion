@@ -2,7 +2,7 @@
 use Base\Controller as Controller;
 
 class AdmDiagnosticoSG_SST Extends Controller{
-	public $titlePage = ".: Administrar catálogos - Solugestion :."; //Para el titulo de la pagina
+	public $titlePage = ".: Administrar parámetros Diagnóstico SG-SST - Solugestion :."; //Para el titulo de la pagina
 	
 	public $admDiagnostico;
 	public $diagnosticoCatalogos;
@@ -52,7 +52,10 @@ class AdmDiagnosticoSG_SST Extends Controller{
 	}
 	
 	public function Crear(){
-		$this->AddJS('modules/AdmDiagnosticoSG_SST/assets/js/crear.js');
+		$this->AddJS([
+			'modules/AdmDiagnosticoSG_SST/assets/js/formulario.js',
+			'modules/AdmDiagnosticoSG_SST/assets/js/crear.js'
+		]);
 		$data["breadcrumb"] = [
 			"titulo" => "Crear parámetro",
 			"ruta" => [
@@ -244,6 +247,7 @@ class AdmDiagnosticoSG_SST Extends Controller{
 			return false;
 		}
 		
+		//$admDiagnostico = $this->admDiagnostico->select("*")->relations(["nPaso","nSeccion","nSubseccion"])->toArray();
 		$admDiagnostico = $this->admDiagnostico->select("*")->relations(["nPaso","nSeccion","nSubseccion"])->toArray();
 		$response = new stdClass();
         $response->page     = $_POST["page"];
